@@ -1,7 +1,7 @@
-
+/* --- Global Styles --- */
 :root {
-    --primary-color: #005A9C; /* Professional Blue */
-    --secondary-color: #00A651; /* Trustworthy Green */
+    --primary-color: #005A9C;
+    --secondary-color: #00A651;
     --light-gray: #f4f4f4;
     --dark-gray: #333;
     --white: #ffffff;
@@ -21,11 +21,9 @@ body {
     padding: 0 20px;
 }
 
-h1, h2, h3 {
-    color: var(--primary-color);
-}
+h1, h2, h3 { color: var(--primary-color); }
 
-/* --- Header & Navigation --- */
+/* --- Header --- */
 header {
     background: var(--white);
     border-bottom: 1px solid #ddd;
@@ -34,40 +32,30 @@ header {
     top: 0;
     z-index: 100;
 }
-
 header nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-
 header .logo {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--primary-color);
     text-decoration: none;
 }
-
 header ul {
     list-style: none;
     display: flex;
     margin: 0;
     padding: 0;
 }
-
-header ul li {
-    margin-left: 25px;
-}
-
+header ul li { margin-left: 25px; }
 header ul li a {
     text-decoration: none;
     color: var(--dark-gray);
     font-weight: 500;
 }
-
-header ul li a:hover {
-    color: var(--primary-color);
-}
+header ul li a:hover { color: var(--primary-color); }
 
 /* --- Buttons --- */
 .btn {
@@ -78,7 +66,6 @@ header ul li a:hover {
     border: none;
     cursor: pointer;
 }
-
 .btn-login {
     background: transparent;
     border: 2px solid var(--primary-color);
@@ -88,47 +75,27 @@ header ul li a:hover {
     background: var(--primary-color);
     color: var(--white);
 }
-
 .btn-primary {
     background: var(--secondary-color);
     color: var(--white);
     font-size: 1.1rem;
 }
-.btn-primary:hover {
-    background: #008a43;
-}
+.btn-primary:hover { background: #008a43; }
 
-
+/* --- Layout Sections --- */
 .hero {
     background: var(--light-gray);
     padding: 4rem 0;
     text-align: center;
 }
-
-.hero h1 {
-    font-size: 2.8rem;
-    margin-bottom: 1rem;
-}
-
-.hero p {
-    font-size: 1.2rem;
-    color: #555;
-    margin-bottom: 2rem;
-}
-
-
-.services {
-    padding: 3rem 0;
-    text-align: center;
-}
-
+.hero h1 { font-size: 2.8rem; margin-bottom: 1rem; }
+.services { padding: 3rem 0; text-align: center; }
 .services-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 25px;
     margin-top: 2rem;
 }
-
 .service-card {
     background: var(--white);
     border: 1px solid #eee;
@@ -136,8 +103,6 @@ header ul li a:hover {
     padding: 2rem;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
-
-/* --- Footer --- */
 footer {
     background: var(--dark-gray);
     color: var(--white);
@@ -146,7 +111,7 @@ footer {
     margin-top: 2rem;
 }
 
-
+/* --- Assistant Icon --- */
 #assistant-icon {
     position: fixed;
     bottom: 25px;
@@ -161,25 +126,14 @@ footer {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     z-index: 1000;
     transition: transform 0.2s ease;
-    
-
     display: flex;
     align-items: center;
     justify-content: center;
 }
+#assistant-icon:hover { transform: scale(1.1); }
+#assistant-icon svg { width: 28px; height: 28px; fill: var(--white); }
 
-#assistant-icon:hover {
-    transform: scale(1.1);
-}
-
-#assistant-icon svg {
-    width: 28px;  
-    height: 28px;
-    fill: var(--white); 
-}
-
-
-
+/* --- Assistant Chatbox --- */
 #chat-assistant-box {
     position: fixed;
     bottom: 100px;
@@ -191,23 +145,19 @@ footer {
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
     z-index: 1000;
     overflow: hidden;
-    
     display: none;
-    
-
     opacity: 0;
     transform: translateY(20px);
     transition: opacity 0.3s ease, transform 0.3s ease;
     flex-direction: column;
 }
-
-
 #chat-assistant-box.show {
     display: flex;
     opacity: 1;
     transform: translateY(0);
 }
 
+/* --- Header & Language Selector --- */
 .chat-header {
     background: var(--primary-color);
     color: var(--white);
@@ -216,9 +166,25 @@ footer {
     justify-content: space-between;
     align-items: center;
 }
+.header-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
 
-.chat-header strong {
-    font-size: 1.1rem;
+/* Language Dropdown Styling */
+#language-selector {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    font-size: 0.85rem;
+    border-radius: 4px;
+    padding: 2px 5px;
+    cursor: pointer;
+    outline: none;
+}
+#language-selector option {
+    color: black; /* Options need black text to be readable */
 }
 
 #close-chat {
@@ -230,6 +196,7 @@ footer {
     line-height: 1;
 }
 
+/* --- Chat Body & Messages --- */
 .chat-body {
     flex-grow: 1;
     padding: 15px;
@@ -245,13 +212,11 @@ footer {
     max-width: 80%;
     word-wrap: break-word;
 }
-
 .bot-message {
     background: #e5e5e5;
     color: #333;
     align-self: flex-start;
 }
-
 .user-message {
     background: var(--primary-color);
     color: var(--white);
@@ -259,6 +224,7 @@ footer {
     margin-left: auto;
 }
 
+/* --- Footer & Voice --- */
 .chat-footer {
     display: flex;
     padding: 10px;
@@ -266,7 +232,6 @@ footer {
     align-items: center;
     flex-wrap: wrap;
 }
-
 .chat-footer input {
     flex-grow: 1;
     border: 1px solid #ccc;
@@ -274,8 +239,6 @@ footer {
     padding: 10px 15px;
     margin-right: 5px;
 }
-
-
 #start-voice-btn {
     background: none;
     border: none;
@@ -287,34 +250,19 @@ footer {
     justify-content: center;
     margin-right: 5px;
 }
-
 #start-voice-btn svg {
     width: 24px;
     height: 24px;
     fill: var(--primary-color);
 }
-
-#start-voice-btn:hover {
-    background: #f0f0f0;
-}
-
-
-#start-voice-btn.listening {
-    animation: pulse 1.5s infinite;
-}
+#start-voice-btn:hover { background: #f0f0f0; }
+#start-voice-btn.listening { animation: pulse 1.5s infinite; }
 
 @keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(0, 90, 156, 0.4);
-    }
-    70% {
-        box-shadow: 0 0 0 10px rgba(0, 90, 156, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(0, 90, 156, 0);
-    }
+    0% { box-shadow: 0 0 0 0 rgba(0, 90, 156, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(0, 90, 156, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 90, 156, 0); }
 }
-
 
 #send-btn {
     background: var(--secondary-color);
@@ -324,7 +272,6 @@ footer {
     padding: 10px 15px;
     cursor: pointer;
 }
-
 #chat-status {
     width: 100%;
     text-align: center;
