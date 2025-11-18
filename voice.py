@@ -164,7 +164,11 @@ if sim >= threshold:
     print(f"🔍 Similarity Score: {sim:.2f}")
 
     print("✅ Verification successful")
+<<<<<<< HEAD
     intent, slots = transcribe_and_translate()
+=======
+    transcribe_and_translate()
+>>>>>>> 920fe1c175e442c78850fa681d6afa47cadd6858
 
 else:
     sys.exit("❌ Verification failed. Voice did not matched.")
@@ -187,6 +191,7 @@ def predict_sub_intent(text):
 
     return "general_query"
 
+<<<<<<< HEAD
 def predict_credit_sub_intent(text):
     text = text.lower()
     
@@ -207,6 +212,9 @@ def predict_credit_sub_intent(text):
         return "credit_limit_increase"
     # Default fallback
     return "credit_general_query"
+=======
+
+>>>>>>> 920fe1c175e442c78850fa681d6afa47cadd6858
 
 
 def dialog_manager(intent, slots):
@@ -218,9 +226,15 @@ def dialog_manager(intent, slots):
     """
     # Define required slots for each intent
     REQUIRED_SLOTS = {
+<<<<<<< HEAD
         "transfer": ["amount", "recipient", "account_number"],
         "check_balance": [],
         "check_transactions": ["start_date", "end_date"]
+=======
+        "transfer": ["amount", "recipient"],
+        "check_balance": [],
+        "check_transactions": ["date_range"],
+>>>>>>> 920fe1c175e442c78850fa681d6afa47cadd6858
 
         #for loan inquiry intent
         "loan types": [],
@@ -229,6 +243,7 @@ def dialog_manager(intent, slots):
         "loan_status": ["user_id"],
         "loan_required_documents": ["loan_type"],
         "loan_processing_time": ["loan_type"],
+<<<<<<< HEAD
 
 
         #for credit card intent
@@ -274,6 +289,25 @@ def dialog_manager(intent, slots):
     
     # Check for missing slots
     
+=======
+        
+    }
+
+    # Check for missing slots
+    missing = [s for s in REQUIRED_SLOTS.get(intent, []) if s not in slots or not slots[s]]
+
+    if missing:
+        # Ask for the first missing slot
+        slot_to_ask = missing[0]
+        message = f"Please tell me the {slot_to_ask}."
+        print(message)
+        speak(message)
+        return {
+            "status": "missing_info",
+            "missing_slot": slot_to_ask,
+            "message": message
+        }
+>>>>>>> 920fe1c175e442c78850fa681d6afa47cadd6858
 
     # If all slots are present → call API
     response = route_to_api(intent, slots)
@@ -283,6 +317,7 @@ def dialog_manager(intent, slots):
 
     return {
         "status": "complete",
+<<<<<<< HEAD
         "intent": intent,
         "slots": slots,
         "api_response": response,
@@ -311,6 +346,31 @@ def speak(text):
         sample_rate=audio.frame_rate
     )
     play_obj.wait_done()
+=======
+        "slots": slots,
+        "api_response": response,
+        "message": message
+    }
+
+# def speak(text):
+#     # Generate speech in memory
+#     mp3_fp = BytesIO()
+#     tts = gTTS(text=sent, lang='en')
+#     tts.write_to_fp(mp3_fp)
+
+#     # Load into pydub without saving
+#     mp3_fp.seek(0)
+#     audio = AudioSegment.from_file(mp3_fp, format="mp3")
+
+#     # Play audio
+#     play_obj = sa.play_buffer(
+#         audio.raw_data,
+#         num_channels=audio.channels,
+#         bytes_per_sample=audio.sample_width,
+#         sample_rate=audio.frame_rate
+#     )
+#     play_obj.wait_done()
+>>>>>>> 920fe1c175e442c78850fa681d6afa47cadd6858
 
 
 
