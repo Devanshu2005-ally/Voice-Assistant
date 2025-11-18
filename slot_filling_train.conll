@@ -1,0 +1,314 @@
+transfer O 500 B-amount rupees I-amount to O Rahul B-recipient Sharma I-recipient
+
+send O 1000 B-amount INR I-amount to O Priya B-recipient Patel I-recipient
+
+please O transfer O 250 B-amount rupees I-amount to O Amit B-recipient
+
+transfer O money O to O John B-recipient Wick I-recipient
+
+transfer O 5000 B-amount rupees I-amount to O account B-account_number number I-account_number 9876543210 I-account_number
+
+pay O my O electricity B-bill_type bill I-bill_type of O 1200 B-amount rupees I-amount to O Tata B-recipient Power I-recipient
+
+send O 2000 B-amount rupees I-amount to O account B-account_number 1234567890 I-account_number
+
+transfer O 15000 B-amount to O 9988776655 B-account_number
+
+pay O internet B-bill_type bill I-bill_type 800 B-amount rupees I-amount
+
+show O my O account O balance O
+
+what O is O my O current O balance O
+
+I O want O to O see O my O transactions O from O 1 B-start_date November I-start_date to O 5 B-end_date November I-end_date . O
+
+Show O me O transactions O for O today B-start_date . O
+
+show O yesterday's B-start_date transactions O . O
+
+show O last B-transaction_count 5 I-transaction_count transactions O
+
+i O would O like O to O see O last B-transaction_count 5 I-transaction_count transactions O
+
+I O want O to O see O my O transaction O history O for O last B-start_date month I-start_date . O
+
+transfer O 2000 B-amount rupees I-amount to O Vikram B-recipient Meena I-recipient
+
+transfer O 3000 B-amount to O account B-account_number 5544332211 I-account_number
+
+what O is O my O savings B-account_type account I-account_type balance O
+
+I O want O to O see O my O transactions O from O last B-start_date 3 I-start_date days I-start_date 
+
+send O 1200 B-amount INR I-amount to O Suresh B-recipient Kumar I-recipient
+
+check O balance O in O my O savings B-account_type account I-account_type
+
+show O me O transaction O details O from O 1 B-start_date November I-start_date to O 5 B-end_date November I-end_date . O
+
+i O want O to O see O details O for O recent B-transaction_count 5 I-transaction_count transactions O
+
+transfer O 300 B-amount rupees I-amount to O Deepak B-recipient Sharma I-recipient
+
+transfer O 2000 B-amount rupees I-amount to O Deepak B-recipient Singh I-recipient
+
+pay O electricity B-bill_type bill I-bill_type of O 1100 B-amount rupees I-amount
+
+what O is O my O checking B-account_type account I-account_type balance O
+
+I O would O like O to O see O the O details O of O transactions O for O last B-start_date 5 I-start_date days I-start_date
+
+I O want O to O see O the O details O of O transactions O for O last B-start_date 10 I-start_date days I-start_date
+
+show O transactions O from O last B-start_date 3 I-start_date days I-start_date
+
+transfer O 15000 B-amount rupees I-amount to O 9988776655 B-account_number
+
+transfer O 1500 B-amount rupees I-amount to O 9988788616 B-account_number
+
+check O balance O in O my O business B-account_type account I-account_type
+
+display O transactions O between O 5 B-start_date March I-start_date and O 9 B-end_date March I-end_date . O
+
+i O would O like O to O see O the O details O of O transactions O from O 5 B-start_date december I-start_date to O 23 B-end_date december I-end_date . O
+
+transfer O 400 B-amount rupees I-amount to O Rakesh B-recipient Sharma I-recipient
+
+pay O mobile B-bill_type recharge I-bill_type of O 350 B-amount rupees I-amount
+
+what O is O my O business B-account_type account I-account_type balance O
+
+show O transactions O for O last B-start_date 15 I-start_date days I-start_date
+
+show O transactions O details O from O last B-start_date 15 I-start_date days I-start_date
+
+i O want O to O see O the O details O of O transactions O for O last B-start_date 15 I-start_date days I-start_date
+
+send O 1500 B-amount INR I-amount to O Mohan B-recipient Singh I-recipient
+
+pay O internet B-bill_type bill I-bill_type of O 900 B-amount rupees I-amount
+
+check O balance O in O my O joint B-account_type account I-account_type
+
+display O transactions O from O between O 4 B-start_date january I-start_date and O 12 B-end_date january I-end_date . O
+
+transfer O 600 B-amount rupees I-amount to O Sandeep B-recipient Sharma I-recipient
+
+what O is O my O joint B-account_type account I-account_type balance O
+
+pay O internet B-bill_type bill I-bill_type 800 B-amount rupees I-amount
+
+what O is O my O saving B-account_type account I-account_type balance O
+
+show O my O account O balance O
+
+show O last B-date_range 5 I-date_range transactions O
+
+display O transactions O from O between O 25 B-start_date october I-start_date and O 27 B-end_date october I-end_date . O
+
+send O 1000 B-amount rupees I-amount to O account B-account_number 1234567890 I-account_number
+
+transfer O 750 B-amount rupees I-amount to O Neha B-recipient Kumar I-recipient
+
+send O 5000 B-amount rupees I-amount to O account B-account_number 1234567890 I-account_number
+
+transfer O 950 B-amount rupees I-amount to O Tanvi B-recipient Shah I-recipient
+
+pay O internet B-bill_type bill I-bill_type 800 B-amount rupees I-amount to O Jio B-recipient
+
+pay O internet B-bill_type charges I-bill_type 900 B-amount rupees I-amount 
+
+show O my O account O balance O
+
+what O is O my O current O balance O
+
+show O savings B-account_type account O balance O
+
+check O balance O in O my O checking B-account_type account O
+
+display O balance O of O my O account O
+
+show O last B-transaction_count 5 I-transaction_count transactions O
+
+show O transactions O for O last B-start_date week I-start_date . O
+
+I O want O to O see O my O transactions O from O 1 B-start_date November I-start_date to O 5 B-end_date November I-end_date . O
+
+I O want O to O see O my O yesterday's B-start_date transactions O details O 
+
+I O want O to O see O yesterday B-start_date  transactions O . O
+
+I O want O to O see O today's B-start_date  transactions O . O
+
+I O want O to O see O recent B-transaction_count 10 I-transaction_count transactions O
+
+can O you O tell O me O my O recent B-transaction_count 5 I-transaction_count transactions O
+
+can O you O tell O me O my O recent B-transaction_count 2 I-transaction_count transactions O
+
+show O me O my O recent B-transaction_count 4 I-transaction_count transactions O
+
+Get O my O transaction O history O for O last B-start_date month I-start_date . O
+
+I O want O to O see O my O transaction O history O for O last B-start_date month I-start_date . O
+
+transfer O 2000 B-amount rupees I-amount to O Vikram B-recipient meena I-recipient
+
+send O 4000 B-amount rupees I-amount to O account B-account_number 8477257781 I-account_number
+
+send O 100 B-amount rupees I-amount to O account B-account_number 8477257781 I-account_number
+
+pay O 500 B-amount  to O account B-account_number 5566778899 I-account_number
+
+pay O 700 B-amount to O Tanvi B-recipient Sharma I-recipient
+
+pay O 700 B-amount to O Tarun B-recipient agarwal I-recipient
+
+what O is O my O savings B-account_type account I-account_type balance O
+
+I O want O to O see O my O transactions O from O 1 B-start_date November I-start_date to O 5 B-end_date November I-end_date . O
+
+show O transactions O for O last B-start_date 3 I-start_date days I-start_date . O
+
+i O would O like O to O see O transactions O for O last B-start_date 4 I-start_date days I-start_date . O
+
+i O would O like O to O see O transactions O for O last B-start_date 7 I-start_date days I-start_date . O
+
+pay O electriciy B-bill_type bill I-bill_type of O 1200 B-amount rupees I-amount to O Tata B-recipient Power I-recipient
+
+pay O internet B-bill_type bill I-bill_type 800 B-amount rupees I-amount to O Jio B-recipient
+
+pay O internet B-bill_type bill I-bill_type 800 B-amount rupees I-amount to O Airtel B-recipient
+
+pay O electriciy B-bill_type bill I-bill_type of O 1200 B-amount rupees I-amount to O BSES B-recipient
+
+Pay O my O electricity B-bill_type bill I-bill_type for O Torrent B-recipient Power I-recipient of O 900 B-amount rupees I-amount
+
+Pay O my O electricity B-bill_type bill I-bill_type for O CESC B-recipient of O 900 B-amount rupees I-amount
+
+Pay O 199 B-amount to O Jio B-recipient for O mobile B-bill_type recharge I-bill_type
+
+Pay O 199 B-amount to O Airtel B-recipient for O mobile B-bill_type recharge I-bill_type
+
+Pay O 199 B-amount to O Vodafone B-recipient for O mobile B-bill_type recharge I-bill_type
+
+Show O my O today's B-start_date all O trnsactions O
+
+show O me O all O transactions O of O today B-start_date
+
+I O want O to O see O the O details O of O today's B-start_date transactions O
+
+display O today's B-start_date  transactions O
+
+I O want O to O see O today's B-start_date all O transactions O
+
+I O want O to O check O today's B-start_date all O transactions O
+
+I O would O like O to O check O today's B-start_date all O transactions O
+
+I O want O to O see O the O details O of O transactions O for O last B-start_date week I-start_date . O
+
+show O me O the O details O of O transactions O for O last B-start_date week I-start_date . O
+
+show O me O the O details O of O transactions O for O last B-start_date month I-start_date . O
+
+Show O my O credit B-credit_term score I-credit_term
+
+I O want O to O see O my O credit B-credit_term score I-credit_term
+
+Tell O me O my O credit B-credit_term score I-credit_term
+
+what O is O my O credit B-credit_term score I-credit_term
+
+What O types O of O loans B-loan_type do O you O offer O
+
+What O is O the O interest B-interest_rate rate I-interest_rate for O a O home B-loan_type loan I-loan_type
+
+Am O I O eligible O for O a O personal B-loan_type loan I-loan_type
+
+Calculate O EMI O for O 5 B-amount lakh I-amount home B-loan_type loan I-loan_type
+
+Show O my O loan B-loan_type application O status O
+
+I O want O to O apply O for O a O personal B-loan_type loan I-loan_type
+
+What O is O the O maximum O home B-loan_type loan I-loan_type amount B-amount I can get O
+
+What O documents B-document_type are O needed O for O car B-loan_type loan I-loan_type
+
+Show O EMI O for O 3 B-tenure years I-tenure personal B-loan_type loan I-loan_type
+
+what O is O the O EMI O for O 7 B-amount lakh I-amount home B-loan_type loan I-loan_type
+
+how O can O I O apply O for O a O home B-loan_type loan I-loan_type
+
+Which O documents B-document_type are O required O for O personal B-loan_type loan I-loan_type
+
+can O you O tell O me O the O EMI O for O 5 B-amount lakh I-amount car B-loan_type loan I-loan_type
+
+what O is O the O interest B-interest_rate rate I-interest_rate for O personal B-loan_type loan I-loan_type
+
+what O is O the O interest B-interest_rate rate I-interest_rate for O car B-loan_type loan I-loan_type
+
+what O is O the O interest B-interest_rate rate I-interest_rate for O home B-loan_type loan I-loan_type
+
+how O can O I O apply O for O a O loan I-loan_type
+
+which O loan I-loan_type is O best O for O me O
+
+can O you O tell O me O which O loan I-loan_type is O best O for O me O
+
+Credit B-card_type limit O for O Silver B-card_type card I-card_type please O
+
+How O much O can O I O spend O using O my O Platinum B-card_type card I-card_type 
+
+How O much O can O I O spend O using O my O credit B-card_type card I-card_type
+
+How O much O can O I O spend O using O my O gold B-card_type card I-card_type
+
+How O much O can O I O spend O using O my O silver B-card_type card I-card_type
+
+Credit O limit O for O platinum B-card_type card I-card_type please O
+
+Credit O limit O for O gold B-card_type card I-card_type please O
+
+What O is O my O available O limit O on O Gold B-card_type card I-card_type
+
+What O is O my O available O limit O on O credit B-card_type card I-card_type
+
+What O is O my O available O limit O on O platinum B-card_type card I-card_type
+
+What O is O my O available O limit O on O silver B-card_type card I-card_type
+
+can O you O please O tell O me O what O is O my O credit B-card_type card I-card_type limit O
+
+can O you O tell O me O what O is O my O gold B-card_type card I-card_type limit O
+
+can O you O tell O me O what O is O my O platinum B-card_type card I-card_type limit O
+
+can O you O tell O me O what O is O my O silver B-card_type card I-card_type limit O
+
+how O much O amount O is O left O in O my O credit B-card_type card I-card_type
+
+how O much O amount O is O left O in O my O gold B-card_type card I-card_type
+
+how O much O amount O is O left O in O my O platinum B-card_type card I-card_type
+
+how O much O amount O is O left O in O my O silver B-card_type card I-card_type
+
+can O you O show O me O my O credit B-card_type card I-card_type limit O
+
+can O you O show O me O my O gold B-card_type card I-card_type limit O
+
+can O you O show O me O my O platinum B-card_type card I-card_type limit O
+
+can O you O show O me O my O silver B-card_type card I-card_type limit O
+
+can O i O increase O my O credit B-card_type card I-card_type limit O
+
+am O i O able O to O increase O my O credit B-card_type card I-card_type limit O
+
+am O i O eligible O to O increase O my O gold B-card_type card I-card_type limit O
+
+am O i O eligible O to O increase O my O credit B-card_type card I-card_type limit O
+

@@ -1,0 +1,160 @@
+text,intent
+transfer 500 rupees to Rahul,transfer
+send 1000 INR to Priya,transfer
+please transfer 250 rupees to Amit,transfer
+transfer money to John,transfer
+transfer 750 rupees to Neha,transfer
+send 200 rupees to Sita,transfer
+transfer 1500 rupees to Ravi,transfer
+please send 3000 INR to Anjali,transfer
+transfer 450 rupees to Karan,transfer
+send 600 rupees to Meera,transfer
+pay my electricity bill of 1200 rupees,pay_bill
+pay water bill 450 rupees,pay_bill
+pay mobile recharge of 300 rupees,pay_bill
+pay internet bill 800 rupees,pay_bill
+pay electricity bill 950 rupees,pay_bill
+pay water bill 700 rupees,pay_bill
+pay mobile recharge 400 rupees,pay_bill
+pay internet bill 1200 rupees,pay_bill
+show my account balance,check_balance
+what is my current balance,check_balance
+show account balance for savings account,check_balance
+check balance in my checking account,check_balance
+display balance of my account,check_balance
+show last 5 transactions,transaction_history
+show transactions from last week,transaction_history
+display transactions from 01/11/2025 to 05/11/2025,transaction_history
+I want to see the details of transactions from yesterday,transaction_history
+show recent 10 transactions,transaction_history
+I want to see my transaction history for last month,transaction_history
+I want to see details for recent 7 transactions,transaction_history
+show transactions from 10/10/2025 to 20/10/2025,transaction_history
+transfer 2000 rupees to Vikram,transfer
+pay gas bill of 600 rupees,pay_bill
+what is my savings account balance,check_balance
+show me the details of transactions from last 3 days,transaction_history
+send 1200 INR to Suresh,transfer
+pay credit card bill of 2500 rupees,pay_bill
+check balance in my savings account,check_balance
+I want to see my transactions detail from 15/10/2025 to 25/10/2025,transaction_history
+transfer 300 rupees to Deepak,transfer
+pay electricity bill of 1100 rupees,pay_bill
+what is my checking account balance,check_balance
+show transactions from last 10 days,transaction_history
+send 800 rupees to Ankit,transfer
+pay water bill of 500 rupees,pay_bill
+check balance in my business account,check_balance
+show the details of transactions from 05/11/2025 to 10/11/2025,transaction_history
+transfer 400 rupees to Rakesh,transfer
+pay mobile recharge of 350 rupees,pay_bill
+what is my business account balance,check_balance
+show transactions from last 15 days,transaction_history
+send 1500 INR to Mohan,transfer
+pay internet bill of 900 rupees,pay_bill
+check balance in my joint account,check_balance
+show me the details of transactions from 20/10/2025 to 30/10/2025,transaction_history
+transfer 600 rupees to Sandeep,transfer
+pay gas bill of 750 rupees,pay_bill
+what is my joint account balance,check_balance
+show transactions from last 20 days,transaction_history
+"what is my saving account balance"", ""check_balance"
+"show me my saving account balance"", ""check_balance"
+"display my saving account balance"", ""check_balance"
+get my saving account balance,check_balance
+I want to see the details of transactions from last 20 days,transaction_history
+transfer 600 rupees to Sandeep,transfer
+what is my joint account balance,check_balance
+show transactions from last 20 days,transaction_history
+transfer 350 rupees to Alok,transfer
+pay electricity bill of 1300 rupees,pay_bill
+what is my fixed deposit account balance,check_balance
+show transactions details from last 25 days,transaction_history
+send 900 INR to Gaurav,transfer
+pay credit card bill of 2700 rupees,pay_bill
+check balance in my fixed deposit account,check_balance
+Can you please show my transaction history,transaction_history
+I want to see my recent transactions,transaction_history
+i would like to check my all transactions on tuesday,transaction_history
+I would like to check all the transactions on yesterday,transaction_history
+I would like to check my all transactions on 15 november,transaction_history
+how many transactions i have done today,transaction_history
+I want to see all the transactions i made today,transaction_history
+I want to see my transactions from 01 november to 10 november,transaction_history
+pay electricity bill of 800 rupees to Cesco,pay_bill
+pay mobile recharge of 400 rupees to Jio,pay_bill
+pay internet bill of 1000 rupees to Airtel,pay_bill
+pay my electricity bill of 1200 rupees to BSES,pay_bill
+pay mobile recharge of 300 rupees to Vodafone,pay_bill
+pay internet bill 800 rupees to BSNL,pay_bill
+pay electricity bill 950 rupees to Tata Power,pay_bill
+pay mobile recharge 400 rupees to Idea,pay_bill
+pay internet bill 1200 rupees to ACT Fibernet,pay_bill
+I want to see Today's transactions,transaction_history
+I want to see Yesterday's all transactions,transaction_history
+I want to check my saving account balance,check_balance
+I want to see my balance,check_balance
+I want to see my saving account balance,check_balance
+I want to see that how much money i have in my saving account,check_balance
+I want to see currently how much money is there in my account,check_balance
+I want to see my credit score,check_credit_score
+show my credit score,check_credit_score
+display my credit score,check_credit_score
+get my credit score,check_credit_score
+tell me my credit score,check_credit_score
+tell me my current credit score,check_credit_score
+what is my credit score,check_credit_score
+how good is my credit score,check_credit_score
+do I have a good credit score,check_credit_score
+is my credit score good,check_credit_score
+I want to see my credit score,check_credit_score
+can you show my credit score,check_credit_score
+display my credit score,check_credit_score
+What types of loans do you offer?,loan_inquiry
+What is the interest rate for personal loans?,loan_inquiry
+What is the interest rate for a home loan?,loan_inquiry
+Am I eligible for a personal loan?,loan_inquiry
+Can I get a loan with a low credit score?,loan_inquiry
+What is the maximum amount I can borrow from bank?,loan_inquiry
+What documents are needed for car loan?,loan_inquiry
+Are there any prepayment penalties on loans?,loan_inquiry
+What is the interest rate for home loans?,loan_inquiry
+Show my loan application status.,loan_inquiry
+Can you help me apply for a loan?,loan_inquiry
+what is the EMI for 5 lakh home loan.,loan_inquiry
+I want to apply for a personal loan,loan_inquiry
+What is the maximum personal loan amount I can get?,loan_inquiry
+How much i can borrow for a home loan?,loan_inquiry
+can you tell me what is the EMI for 5 lakh home loan?,loan_inquiry
+What documents are needed for a car loan?,loan_inquiry
+what documents are required for personal loan?,loan_inquiry
+How can I apply for a home loan?,loan_inquiry
+how many types of loan do you offer?,loan_inquiry
+Which loan is best for me?,loan_inquiry
+can you tell me which loan is best for me?,loan_inquiry
+What is my credit limit?,check_credit_limit
+show my credit limit,check_credit_limit
+display my credit limit,check_credit_limit
+get my credit limit,check_credit_limit
+tell me my credit limit,check_credit_limit
+how much credit do I have,check_credit_limit
+I want to see my credit limit,check_credit_limit
+How much can I spend using my credit card?,check_credit_limit
+What is the available credit on my card?,check_credit_limit
+currently in my credit card how much amount is left,check_credit_limit
+how much amount is left on my platinum card,check_credit_limit
+how much credit is available on my gold credit card,check_credit_limit
+Credit limit for Silver card please,check_credit_limit
+What is my available limit on Gold card?,check_credit_limit
+how much amount is left in my credit card,check_credit_limit
+how much amount is left in my gold card,check_credit_limit
+how much can i spend using my credit card,check_credit_limit
+how much can i spend using my gold card,check_credit_limit
+how much can i spend using my platinum card,check_credit_limit
+can you show me my credit card limit,check_credit_limit
+can you show me my gold card limit,check_credit_limit
+can you show me my platinum card limit,check_credit_limit
+Can you raise my card limit?,check_credit_limit
+Can you increase my credit card limit?,check_credit_limit
+can i increase my credit card limit,check_credit_limit
+am i able to increase my credit card limit,check_credit_limit
