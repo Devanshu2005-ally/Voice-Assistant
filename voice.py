@@ -187,6 +187,15 @@ def predict_sub_intent(text):
 
     return "general_query"
 
+def detect_reminder_type(slots):
+    if "days" in slots:
+        return "relative"
+    
+    if "day" in slots or "month" in slots:
+        return "absolute"
+
+    return "unknown"
+
 def predict_credit_sub_intent(text):
     text = text.lower()
     
@@ -220,7 +229,7 @@ def dialog_manager(intent, slots):
     REQUIRED_SLOTS = {
         "transfer": ["amount", "recipient", "account_number"],
         "check_balance": [],
-        "check_transactions": ["start_date", "end_date"]
+        "check_transactions": ["start_date", "end_date"],
 
         #for loan inquiry intent
         "loan types": [],
@@ -238,9 +247,10 @@ def dialog_manager(intent, slots):
         "credit_limit_increase": ["card_type", "card_name", "requested_increase_amount"],
         "credit_eligibility": ["card_type", "income", "credit_score"]
         
+        #for payment alerts
     }
     if intent == "loan_inquiry":
-        sub_intent = predict_loan_sub_intent(user_text)
+        sub_intent = predict_sub_intent(user_text)
 
         
 
@@ -269,6 +279,17 @@ def dialog_manager(intent, slots):
             "api_response": response
         }
     
+
+    if intent == "set_reminder":
+        subintent = detect_reminder_type(slots)
+
+        response = route_to_api(subintent, slots)
+        return {
+            "status": "complete",
+            "intent": sub_intent,
+            "slots": slots,
+            "api_response": response
+        }
     
     
     

@@ -74,12 +74,12 @@ print(metrics.flat_classification_report(
 
 
 
-tokens = ["I", "want", "to", "see", "Yesterday's", "all", "transactions"]
+tokens = ["Remind", "me", "to", "pay", "my", "electricity", "tomorrow"]
 features = sent2features([(t, 'O') for t in tokens])
 pred = crf.predict([features])[0]
 result = list(zip(tokens, pred))
 print(result)
 
-# Save the model
-with open("slot_filling_crf_model.pkl", "wb") as f:
-    pickle.dump(crf, f)
+# # Save the model
+# with open("slot_filling_crf_model.pkl", "wb") as f:
+#     pickle.dump(crf, f)
