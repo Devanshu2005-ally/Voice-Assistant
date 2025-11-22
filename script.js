@@ -19,19 +19,21 @@ document.addEventListener("DOMContentLoaded", function() {
             title: "Virtual Assistant",
             placeholder: "Type your message...",
             listening: "Listening...",
+            processing: "Thinking...",
             error: "Error detected.",
             noVoice: "Voice input not supported.",
-            welcome: "Hello! How can I help you today?",
-            botPrefix: "You said: "
+            welcome: "Hello! How can I help you with your banking today?",
+            botPrefix: "Bot: "
         },
         'hi-IN': {
             title: "आभासी सहायक", // Virtual Assistant
             placeholder: "अपना संदेश लिखें...", // Type your message
-            listening: "सुन रहा हूँ...", // Listening
+            listening: "सुन रहा हूँ...",
+            processing: "सोच रहा हूँ...",
             error: "त्रुटि पाई गई।", // Error
             noVoice: "आवाज़ इनपुट समर्थित नहीं है।", 
-            welcome: "नमस्ते! मैं आपकी कैसे मदद कर सकता हूँ?",
-            botPrefix: "आपने कहा: "
+            welcome: "नमस्ते! मैं आपकी बैंकिंग में कैसे मदद कर सकता हूँ?",
+            botPrefix: "बॉट: "
         }
     };
 
@@ -41,22 +43,27 @@ document.addEventListener("DOMContentLoaded", function() {
     // --- Toggle Chatbox ---
     function toggleChatbox() {
         chatBox.classList.toggle('show');
+        // Auto-focus input when opened
+        if (chatBox.classList.contains('show')) {
+            setTimeout(() => chatInput.focus(), 300);
+        }
     }
-    assistantIcon.addEventListener('click', toggleChatbox);
-    closeChatButton.addEventListener('click', toggleChatbox);
+    if(assistantIcon) assistantIcon.addEventListener('click', toggleChatbox);
+    if(closeChatButton) closeChatButton.addEventListener('click', toggleChatbox);
 
     // --- Language Switching Logic ---
-    languageSelector.addEventListener('change', (e) => {
-        currentLang = e.target.value;
-        updateInterfaceLanguage(currentLang);
-    });
+    if(languageSelector) {
+        languageSelector.addEventListener('change', (e) => {
+            currentLang = e.target.value;
+            updateInterfaceLanguage(currentLang);
+        });
+    }
 
     function updateInterfaceLanguage(lang) {
         const t = translations[lang];
         
-        // Update Static Text
-        chatTitle.textContent = t.title;
-        chatInput.placeholder = t.placeholder;
+        if(chatTitle) chatTitle.textContent = t.title;
+        if(chatInput) chatInput.placeholder = t.placeholder;
         
         // Add a system message indicating language switch
         addMessageToChat(lang === 'hi-IN' ? "भाषा हिंदी में बदल दी गई है।" : "Language switched to English.", 'bot');
@@ -65,28 +72,27 @@ document.addEventListener("DOMContentLoaded", function() {
     // --- Voice Assistant Logic ---
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-    if (SpeechRecognition) {
+    if (SpeechRecognition && voiceBtn) {
         const recognition = new SpeechRecognition();
         recognition.interimResults = false;
 
         voiceBtn.addEventListener('click', () => {
-            // IMPORTANT: Set the recognition language based on the dropdown selection
             recognition.lang = currentLang; 
             try {
                 recognition.start();
             } catch (error) {
-                console.error("Recognition already started.", error);
+                console.error("Recognition already started or error:", error);
             }
         });
 
         recognition.onstart = () => {
-            chatStatus.textContent = translations[currentLang].listening;
+            if(chatStatus) chatStatus.textContent = translations[currentLang].listening;
             voiceBtn.classList.add('listening');
         };
 
         recognition.onend = () => {
-            chatStatus.textContent = ""; 
             voiceBtn.classList.remove('listening');
+            // Status cleared in sendTranscript
         };
 
         recognition.onresult = (event) => {
@@ -97,28 +103,33 @@ document.addEventListener("DOMContentLoaded", function() {
 
         recognition.onerror = (event) => {
             console.error("Speech Error:", event.error);
-            chatStatus.textContent = translations[currentLang].error;
+            if(chatStatus) chatStatus.textContent = translations[currentLang].error;
+            voiceBtn.classList.remove('listening');
         };
 
-    } else {
+    } else if (voiceBtn) {
         console.error("Speech Recognition not supported.");
-        chatStatus.textContent = translations[currentLang].noVoice;
+        if(chatStatus) chatStatus.textContent = translations[currentLang].noVoice;
         voiceBtn.style.display = "none";
     }
 
     // --- Sending Messages ---
-    sendBtn.addEventListener('click', () => {
-        const text = chatInput.value.trim();
-        if (text) {
-            addMessageToChat(text, 'user');
-            sendTranscriptToModel(text, currentLang);
-            chatInput.value = '';
-        }
-    });
+    if(sendBtn) {
+        sendBtn.addEventListener('click', () => {
+            const text = chatInput.value.trim();
+            if (text) {
+                addMessageToChat(text, 'user');
+                sendTranscriptToModel(text, currentLang);
+                chatInput.value = '';
+            }
+        });
+    }
 
-    chatInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendBtn.click();
-    });
+    if(chatInput) {
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendBtn.click();
+        });
+    }
 
     function addMessageToChat(message, sender) {
         const p = document.createElement('p');
@@ -128,35 +139,42 @@ document.addEventListener("DOMContentLoaded", function() {
         chatBody.scrollTop = chatBody.scrollHeight;
     }
 
-    // --- ML Model Connection Placeholder ---
-    function sendTranscriptToModel(transcript, lang) {
-        console.log(`Sending to Model [Lang: ${lang}]:`, transcript);
-
-        // NOTE: When you connect your backend, pass the 'lang' variable too!
-        // This helps your ML model know if it should process Hindi or English.
+    // --- API Connection ---
+    async function sendTranscriptToModel(transcript, lang) {
+        console.log(`Sending to Backend [Lang: ${lang}]:`, transcript);
         
-        setTimeout(() => {
-            // Demo Logic for response
-            let reply = "";
-            const t = translations[lang];
+        if(chatStatus) chatStatus.textContent = translations[lang].processing; 
 
-            if (lang === 'hi-IN') {
-                // Simple Hindi Keyword Demo
-                if (transcript.includes("बैलेंस") || transcript.includes("खाता")) {
-                    reply = "आपका वर्तमान बैलेंस ₹10,000 है।";
-                } else {
-                    reply = `आपने कहा: "${transcript}" (यह एक डेमो है)`;
-                }
-            } else {
-                // Simple English Keyword Demo
-                if (transcript.toLowerCase().includes("balance")) {
-                    reply = "Your current balance is $10,000.";
-                } else {
-                    reply = `You said: "${transcript}" (This is a demo)`;
-                }
+        try {
+            const response = await fetch('http://127.0.0.1:8000/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: transcript,
+                    language: lang,
+                    user_id: 1 // Hardcoded user ID for demonstration
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.status}`);
             }
+
+            const data = await response.json();
             
-            addMessageToChat(reply, 'bot');
-        }, 1000);
+            // Add the bot's response to the chat
+            addMessageToChat(data.response, 'bot');
+            
+        } catch (error) {
+            console.error("Connection Error:", error);
+            const errorMessage = lang === 'en-US' 
+                ? "Could not connect to the banking server." 
+                : "बैंकिंग सर्वर से संपर्क नहीं हो सका।";
+            addMessageToChat(errorMessage, 'bot');
+        } finally {
+            if(chatStatus) chatStatus.textContent = ""; 
+        }
     }
 });
