@@ -28,7 +28,7 @@ def load_custom_conll(file_path):
     return sentences
 
 
-file_path = r"D:\Desktop\Voice Assistent\slot_filling_train.conll"  # your file
+file_path = r"slot_filling_train.conll"  # your file
 sentences = load_custom_conll(file_path)
 
 # Check first sentence
@@ -80,6 +80,3 @@ pred = crf.predict([features])[0]
 result = list(zip(tokens, pred))
 print(result)
 
-# # Save the model
-# with open("slot_filling_crf_model.pkl", "wb") as f:
-#     pickle.dump(crf, f)
