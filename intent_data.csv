@@ -2,60 +2,71 @@ text,intent
 transfer 500 rupees to Rahul,transfer
 send 1000 INR to Priya,transfer
 please transfer 250 rupees to Amit,transfer
-transfer money to John,transfer
-transfer 750 rupees to Neha,transfer
+transfer money to account number 123456789,transfer
+transfer 750 rupees to account number 987654321,transfer
 send 200 rupees to Sita,transfer
-transfer 1500 rupees to Ravi,transfer
+transfer 1500 rupees to Ravi sharma,transfer
 please send 3000 INR to Anjali,transfer
-transfer 450 rupees to Karan,transfer
+send 450 rupees to Karan,transfer
 send 600 rupees to Meera,transfer
-pay my electricity bill of 1200 rupees,pay_bill
-pay water bill 450 rupees,pay_bill
+send electricity bill of 1200 rupees,pay_bill
+pay internet bill of 450 rupees,pay_bill
 pay mobile recharge of 300 rupees,pay_bill
-pay internet bill 800 rupees,pay_bill
-pay electricity bill 950 rupees,pay_bill
-pay water bill 700 rupees,pay_bill
-pay mobile recharge 400 rupees,pay_bill
-pay internet bill 1200 rupees,pay_bill
+pay recharge of 349 rupees to Airtel,pay_bill
+send internet bill of 800 rupees,pay_bill
+send internet bill of 760 rupees to Airtel,pay_bill
+pay electricity bill of 700 rupees to Tata Power,pay_bill
+pay mobile recharge 400 rupees to Vodafone,pay_bill
+pay internet bill of 1200 rupees to Jio,pay_bill
 show my account balance,check_balance
 what is my current balance,check_balance
 show account balance for savings account,check_balance
+how much amount is left in my savings account,check_balance
+send 1500 rupees to Ravi sharma,transfer
 check balance in my checking account,check_balance
 display balance of my account,check_balance
 show last 5 transactions,transaction_history
 show transactions from last week,transaction_history
+how much amount is left in my account,check_balance
 display transactions from 01/11/2025 to 05/11/2025,transaction_history
 I want to see the details of transactions from yesterday,transaction_history
+how much amount is left in my account,check_balance
 show recent 10 transactions,transaction_history
+send 2000 rupees to account number 8867492140,transfer
 I want to see my transaction history for last month,transaction_history
 I want to see details for recent 7 transactions,transaction_history
 show transactions from 10/10/2025 to 20/10/2025,transaction_history
-transfer 2000 rupees to Vikram,transfer
+how much amount is left in my savings account,check_balance
+transfer 2000 rupees to account number 886749231,transfer
 pay gas bill of 600 rupees,pay_bill
 what is my savings account balance,check_balance
 show me the details of transactions from last 3 days,transaction_history
-send 1200 INR to Suresh,transfer
+send 1200 rupees to Suresh tiwari,transfer
 pay credit card bill of 2500 rupees,pay_bill
 check balance in my savings account,check_balance
 I want to see my transactions detail from 15/10/2025 to 25/10/2025,transaction_history
-transfer 300 rupees to Deepak,transfer
+send 300 rupees to Deepak verma,transfer
 pay electricity bill of 1100 rupees,pay_bill
 what is my checking account balance,check_balance
 show transactions from last 10 days,transaction_history
-send 800 rupees to Ankit,transfer
-pay water bill of 500 rupees,pay_bill
+send 800 rupees to Ankit singh,transfer
+send 500 rupees to account number 7829347610,transfer
+transfer 1200 rupees to account number 8877648910,transfer
+send 700 rupees to account number 9988776655,transfer
+pay gas bill of 500 rupees to Indraprastha Gas,pay_bill
 check balance in my business account,check_balance
 show the details of transactions from 05/11/2025 to 10/11/2025,transaction_history
-transfer 400 rupees to Rakesh,transfer
-pay mobile recharge of 350 rupees,pay_bill
+transfer 400 rupees to account number 9933326100,transfer
+pay mobile recharge of 350 rupees to Vodafone,pay_bill
 what is my business account balance,check_balance
 show transactions from last 15 days,transaction_history
-send 1500 INR to Mohan,transfer
-pay internet bill of 900 rupees,pay_bill
+send 1500 rupees to Mohan,transfer
+pay internet bill of 900 rupees to Airtel,pay_bill
 check balance in my joint account,check_balance
 show me the details of transactions from 20/10/2025 to 30/10/2025,transaction_history
 transfer 600 rupees to Sandeep,transfer
-pay gas bill of 750 rupees,pay_bill
+pay gas bill of 750 rupees to Hp Gas,pay_bill
+pay gas bill of 750 rupees to bharat Gas,pay_bill
 what is my joint account balance,check_balance
 show transactions from last 20 days,transaction_history
 "what is my saving account balance"", ""check_balance"
@@ -66,12 +77,12 @@ I want to see the details of transactions from last 20 days,transaction_history
 transfer 600 rupees to Sandeep,transfer
 what is my joint account balance,check_balance
 show transactions from last 20 days,transaction_history
-transfer 350 rupees to Alok,transfer
-pay electricity bill of 1300 rupees,pay_bill
+transfer 350 rupees to account number 9933326100,transfer
+pay electricity bill of 1300 rupees to Cesco,pay_bill
 what is my fixed deposit account balance,check_balance
 show transactions details from last 25 days,transaction_history
-send 900 INR to Gaurav,transfer
-pay credit card bill of 2700 rupees,pay_bill
+send 900 rrupees to account number 8239272610,transfer
+pay credit card bill of 2700 rupees to HDFC,pay_bill
 check balance in my fixed deposit account,check_balance
 Can you please show my transaction history,transaction_history
 I want to see my recent transactions,transaction_history
@@ -155,6 +166,37 @@ can you show me my credit card limit,check_credit_limit
 can you show me my gold card limit,check_credit_limit
 can you show me my platinum card limit,check_credit_limit
 Can you raise my card limit?,check_credit_limit
-Can you increase my credit card limit?,check_credit_limit
+how can i increase my credit card limit?,check_credit_limit
 can i increase my credit card limit,check_credit_limit
 am i able to increase my credit card limit,check_credit_limit
+how can i increase my gold card limit?,check_credit_limit
+how can i raise my platinum card limit?,check_credit_limit
+how can i raise my credit card limit?,check_credit_limit
+Set a reminder for my electricity bill.,set_reminder
+Remind me to pay my internet bill.,set_reminder
+Set a reminder to pay my mobile recharge.,set_reminder
+Remind me about my gas bill payment.,set_reminder
+Set a reminder for my credit card bill.,set_reminder
+Remind me to pay my water bill.,set_reminder
+remind me to pay my electricity bill on 5 november,set_reminder
+set a reminder for my internet bill after 5 days,set_reminder
+remind me in 6 days about mobile recharge,set_reminder
+set a reminder to pay my mobile recharge on 10 november,set_reminder
+remind me about my gas bill payment tomorrow,set_reminder
+set a reminder for my credit card bill next week,set_reminder
+remind me in 3 days about water bill,set_reminder
+remind me in 3 days to pay my water bill,set_reminder
+send me a payment alert for my loan EMI. in 3 day,set_reminder
+remind me tomorrow about the loan EMI,set_reminder
+remind me about my loan EMI day after tomorrow,set_reminder
+remind me on 15 november about my gas bill,set_reminder
+Please remind me on Sunday to pay my broadband bill.,set_reminder
+Remind me to pay my credit card bill on 5th.,set_reminder
+Remind me to pay my credit card bill on 10th.,set_reminder
+Remind me on 15 to pay me internet bill,set_reminder
+Remind me day after tomorrow to pay my internet bill,set_reminder
+Set a reminder for my electricity bill next Monday.,set_reminder
+Remind me this friday to pay my water bill,set_reminder
+Remind me to pay my water bill this Friday after 2 days,set_reminder
+remind me tomorrow about my mobile recharge bill,set_reminder
+remind me tomorrow about my electricity bill,set_reminder

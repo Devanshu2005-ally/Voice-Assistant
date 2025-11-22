@@ -42,7 +42,7 @@ print(classification_report(y_test, y_pred))
 
 
 
-input_text = "tell me my current credit score"
+input_text = "how can i increase my credit card limit?"
 input_tfidf = tfidf.transform([input_text])
 predicted_intent = model.predict(input_tfidf)[0]
 print(f"Predicted Intent: {predicted_intent}")
