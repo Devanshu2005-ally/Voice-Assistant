@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey, LargeBinary
 from sqlalchemy.orm import sessionmaker, relationship, declarative_base
 from pydantic import BaseModel
+from sqlalchemy.orm import Session # Added for type hinting
 
 # --- 1. DATABASE CONFIGURATION ---
 DATABASE_URL = "sqlite:///./banking_assistant.db"
@@ -8,6 +9,20 @@ DATABASE_URL = "sqlite:///./banking_assistant.db"
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
+# Dependency to get DB session (for FastAPI routes)
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+# Helper to get a standalone DB session (for scripts like registration/security)
+def get_db_session() -> Session:
+    """Returns a standalone database session for scripts (not FastAPI dependencies)."""
+    db = SessionLocal()
+    return db
 
 # --- 2. DATABASE MODELS (Tables) ---
 
@@ -22,6 +37,7 @@ class User(Base):
     accounts = relationship("Account", back_populates="owner")
     loans = relationship("Loan", back_populates="owner")
     credit_cards = relationship("CreditCard", back_populates="owner")
+    transactions = relationship("Transaction", back_populates="owner") # ADDED: Transaction Relationship
 
 class Account(Base):
     __tablename__ = "accounts"
@@ -52,6 +68,18 @@ class CreditCard(Base):
     
     owner = relationship("User", back_populates="credit_cards")
 
+# NEW MODEL FOR TRANSACTIONS
+class Transaction(Base):
+    __tablename__ = "transactions"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    transaction_date = Column(String)  # Using String for simplicity
+    description = Column(String)
+    amount = Column(Float)
+    transaction_type = Column(String)  # 'Debit' or 'Credit'
+    
+    owner = relationship("User", back_populates="transactions")
+
 # --- 3. PYDANTIC SCHEMAS (For API validation) ---
 class AccountUpdate(BaseModel):
     amount: float
@@ -78,6 +106,7 @@ def init_db():
         db.refresh(user)
         
         # Create Account
+        # Initial balance set to 50,000
         db.add(Account(user_id=user.id, account_number="1234567890", balance=50000.0))
         
         # Create Loan
@@ -86,15 +115,12 @@ def init_db():
         # Create Credit Card
         db.add(CreditCard(user_id=user.id, card_name="HDFC Regalia", limit_available=80000.0, limit_used=20000.0))
         
+        # ADDED: Example Transactions for User ID 1
+        db.add(Transaction(user_id=user.id, transaction_date="2025-11-20", description="Online Purchase - Amazon", amount=1500.00, transaction_type="Debit"))
+        db.add(Transaction(user_id=user.id, transaction_date="2025-11-21", description="ATM Withdrawal", amount=5000.00, transaction_type="Debit"))
+        db.add(Transaction(user_id=user.id, transaction_date="2025-11-22", description="Salary Deposit", amount=65000.00, transaction_type="Credit"))
+
         db.commit()
         print("✅ Example data loaded.")
     
     db.close()
-
-# Dependency to get DB session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()

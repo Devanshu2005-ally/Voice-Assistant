@@ -1,134 +1,126 @@
 document.addEventListener("DOMContentLoaded", function() {
 
-    // --- UI Elements ---
-    const assistantIcon = document.getElementById('assistant-icon');
     const chatBox = document.getElementById('chat-assistant-box');
-    const closeChatButton = document.getElementById('close-chat');
-    const languageSelector = document.getElementById('language-selector');
-    
-    const chatTitle = document.getElementById('chat-title');
     const chatInput = document.getElementById('chat-input');
-    const chatStatus = document.getElementById('chat-status');
     const chatBody = document.getElementById('chat-body');
     const sendBtn = document.getElementById('send-btn');
     const voiceBtn = document.getElementById('start-voice-btn');
+    
+    let mediaRecorder;
+    let audioChunks = [];
+    let isRecording = false;
 
-    // --- Translation Dictionary ---
-    const translations = {
-        'en-US': {
-            title: "Virtual Assistant",
-            placeholder: "Type your message...",
-            listening: "Listening...",
-            processing: "Thinking...",
-            error: "Error detected.",
-            noVoice: "Voice input not supported.",
-            welcome: "Hello! How can I help you with your banking today?",
-            botPrefix: "Bot: "
-        },
-        'hi-IN': {
-            title: "आभासी सहायक", // Virtual Assistant
-            placeholder: "अपना संदेश लिखें...", // Type your message
-            listening: "सुन रहा हूँ...",
-            processing: "सोच रहा हूँ...",
-            error: "त्रुटि पाई गई।", // Error
-            noVoice: "आवाज़ इनपुट समर्थित नहीं है।", 
-            welcome: "नमस्ते! मैं आपकी बैंकिंग में कैसे मदद कर सकता हूँ?",
-            botPrefix: "बॉट: "
+    // --- Text Message ---\r\n    sendBtn.addEventListener('click', () => {
+        const text = chatInput.value.trim();
+        if (text) {
+            addMessageToChat(text, 'user');
+            sendTextToModel(text);
+            chatInput.value = '';
         }
-    };
+    });
 
-    // Current Language State (Default English)
-    let currentLang = 'en-US';
+    // --- Voice Logic (Security Enabled) ---\r\n    voiceBtn.addEventListener('click', async () => {
+        if (!isRecording) {
+            startRecording();
+        } else {
+            stopRecording();
+        }
+    });
 
-    // --- Toggle Chatbox ---
-    function toggleChatbox() {
-        chatBox.classList.toggle('show');
-        // Auto-focus input when opened
-        if (chatBox.classList.contains('show')) {
-            setTimeout(() => chatInput.focus(), 300);
+    async function startRecording() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                await sendAudioToModel(audioBlob);
+            };
+
+            mediaRecorder.start();
+            isRecording = true;
+            voiceBtn.textContent = '🛑'; // Change icon to stop
+            addMessageToChat('Recording...', 'bot-status');
+        } catch (error) {
+            console.error('Microphone access denied or error:', error);
+            addMessageToChat('Error: Please allow microphone access.', 'bot');
         }
     }
-    if(assistantIcon) assistantIcon.addEventListener('click', toggleChatbox);
-    if(closeChatButton) closeChatButton.addEventListener('click', toggleChatbox);
 
-    // --- Language Switching Logic ---
-    if(languageSelector) {
-        languageSelector.addEventListener('change', (e) => {
-            currentLang = e.target.value;
-            updateInterfaceLanguage(currentLang);
-        });
+    function stopRecording() {
+        if (mediaRecorder && isRecording) {
+            mediaRecorder.stop();
+            isRecording = false;
+            voiceBtn.textContent = '🎤'; // Change icon back to mic
+            addMessageToChat('Recording stopped. Processing...', 'bot-status');
+        }
     }
 
-    function updateInterfaceLanguage(lang) {
-        const t = translations[lang];
+    async function sendTextToModel(text) {
+        addMessageToChat("Processing text...", 'bot');
         
-        if(chatTitle) chatTitle.textContent = t.title;
-        if(chatInput) chatInput.placeholder = t.placeholder;
+        const payload = {
+            message: text,
+            user_id: "user",
+            language: "en-US"
+        };
         
-        // Add a system message indicating language switch
-        addMessageToChat(lang === 'hi-IN' ? "भाषा हिंदी में बदल दी गई है।" : "Language switched to English.", 'bot');
+        try {
+            const response = await fetch('http://127.0.0.1:8000/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+            
+            const data = await response.json();
+            addMessageToChat(data.response, 'bot');
+            speakResponse(data.response); // Speak the bot's text response
+        } catch (error) {
+            console.error(error);
+            addMessageToChat("Connection failed.", 'bot');
+            speakResponse("I could not connect to the server.");
+        }
     }
 
-    // --- Voice Assistant Logic ---
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    async function sendAudioToModel(audioBlob) {
+        addMessageToChat("Processing voice security...", 'bot'); // Feedback
+        
+        const formData = new FormData();
+        // File name must end in .wav or .webm depending on browser
+        formData.append("audio", audioBlob, "input.wav"); 
+        formData.append("user_id", "user"); // Hardcoded user for now
+        formData.append("language", "en-US");
 
-    if (SpeechRecognition && voiceBtn) {
-        const recognition = new SpeechRecognition();
-        recognition.interimResults = false;
+        try {
+            const response = await fetch('http://127.0.0.1:8000/voice-chat', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
 
-        voiceBtn.addEventListener('click', () => {
-            recognition.lang = currentLang; 
-            try {
-                recognition.start();
-            } catch (error) {
-                console.error("Recognition already started or error:", error);
+            if (data.verified === false) {
+                // Security Failed
+                addMessageToChat("❌ " + data.response, 'bot');
+                speakResponse("Security check failed. " + data.response); // Speak failure message
+            } else {
+                // Success
+                addMessageToChat("✅ Verified. You said: " + data.transcription, 'user');
+                addMessageToChat(data.response, 'bot');
+                speakResponse(data.response); // <--- ADDED: Speak the bot's final response
             }
-        });
-
-        recognition.onstart = () => {
-            if(chatStatus) chatStatus.textContent = translations[currentLang].listening;
-            voiceBtn.classList.add('listening');
-        };
-
-        recognition.onend = () => {
-            voiceBtn.classList.remove('listening');
-            // Status cleared in sendTranscript
-        };
-
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            addMessageToChat(transcript, 'user');
-            sendTranscriptToModel(transcript, currentLang);
-        };
-
-        recognition.onerror = (event) => {
-            console.error("Speech Error:", event.error);
-            if(chatStatus) chatStatus.textContent = translations[currentLang].error;
-            voiceBtn.classList.remove('listening');
-        };
-
-    } else if (voiceBtn) {
-        console.error("Speech Recognition not supported.");
-        if(chatStatus) chatStatus.textContent = translations[currentLang].noVoice;
-        voiceBtn.style.display = "none";
-    }
-
-    // --- Sending Messages ---
-    if(sendBtn) {
-        sendBtn.addEventListener('click', () => {
-            const text = chatInput.value.trim();
-            if (text) {
-                addMessageToChat(text, 'user');
-                sendTranscriptToModel(text, currentLang);
-                chatInput.value = '';
-            }
-        });
-    }
-
-    if(chatInput) {
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendBtn.click();
-        });
+        } catch (error) {
+            console.error(error);
+            addMessageToChat("Connection failed.", 'bot');
+            speakResponse("I could not connect to the server.");
+        }
     }
 
     function addMessageToChat(message, sender) {
@@ -136,45 +128,21 @@ document.addEventListener("DOMContentLoaded", function() {
         p.textContent = message;
         p.className = (sender === 'user') ? 'user-message' : 'bot-message';
         chatBody.appendChild(p);
-        chatBody.scrollTop = chatBody.scrollHeight;
+        chatBody.scrollTop = chatBody.scrollHeight; // Auto-scroll to latest message
     }
-
-    // --- API Connection ---
-    async function sendTranscriptToModel(transcript, lang) {
-        console.log(`Sending to Backend [Lang: ${lang}]:`, transcript);
-        
-        if(chatStatus) chatStatus.textContent = translations[lang].processing; 
-
-        try {
-            const response = await fetch('http://127.0.0.1:8000/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    message: transcript,
-                    language: lang,
-                    user_id: 1 // Hardcoded user ID for demonstration
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error(`API Error: ${response.status}`);
-            }
-
-            const data = await response.json();
+    
+    // --- NEW TEXT-TO-SPEECH FUNCTION ---
+    function speakResponse(text) {
+        if ('speechSynthesis' in window) {
+            // Stop any currently speaking audio before starting a new one
+            window.speechSynthesis.cancel(); 
             
-            // Add the bot's response to the chat
-            addMessageToChat(data.response, 'bot');
-            
-        } catch (error) {
-            console.error("Connection Error:", error);
-            const errorMessage = lang === 'en-US' 
-                ? "Could not connect to the banking server." 
-                : "बैंकिंग सर्वर से संपर्क नहीं हो सका।";
-            addMessageToChat(errorMessage, 'bot');
-        } finally {
-            if(chatStatus) chatStatus.textContent = ""; 
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US'; 
+            window.speechSynthesis.speak(utterance);
+        } else {
+            console.warn("Browser does not support the Web Speech API for TTS.");
         }
     }
+
 });
