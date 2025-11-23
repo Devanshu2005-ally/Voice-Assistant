@@ -312,3 +312,66 @@ am O i O eligible O to O increase O my O gold B-card_type card I-card_type limit
 
 am O i O eligible O to O increase O my O credit B-card_type card I-card_type limit O
 
+Set O a O reminder O for O water B-reminder_type bill I-reminder_type on O 7th B-day January B-month
+
+remind O me O to O pay O electricity B-reminder_type bill I-reminder_type on O 10th B-day 
+
+remind O me O to O pay O my O internet B-reminder_type bill I-reminder_type after O 3 B-days days I-days
+
+remind O me O to O pay O my O mobile B-reminder_type recharge I-reminder_type on O 5th B-day February B-month
+
+remind O me O to O pay O my O water B-reminder_type bill I-reminder_type on O 15th B-day March B-month
+
+remind O me O to O pay O my O electricity B-reminder_type bill I-reminder_type on O 20th B-day
+
+remind O me O to O pay O my O gas B-reminder_type bill I-reminder_type on O 18th B-day April B-month
+
+set O a O payment O alert O for O electricity B-reminder_type bill I-reminder_type on O 12th B-day  May B-month
+
+set O a O payment O alert O for O gas B-reminder_type bill I-reminder_type on O 18th B-day 
+
+remind O me O to O pay O my O intenet B-reminder_type bill I-reminder_type on O 11 B-day 
+
+remind O me O to O pay O my O mobile B-reminder_type recharge I-reminder_type on O 5th B-day  december B-month
+
+set O a O reminder O for O water B-reminder_type bill I-reminder_type on O 7 B-day november B-month
+
+set O a O reminder O for O water B-reminder_type bill I-reminder_type on O 24th B-day
+
+remind O me O to O pay O my O credit B-reminder_type card I-reminder_type bill I-reminder_type on O 30 B-day june B-month
+
+remind O me O to O pay O my O credit B-reminder_type card I-reminder_type bill I-reminder_type on O 28 B-day 
+
+remind O me O to O pay O my O credit B-reminder_type card I-reminder_type bill I-reminder_type after O 5 B-days days I-days
+
+remind O me O to O pay O my O credit B-reminder_type card I-reminder_type bill I-reminder_type after O 4 B-days days I-days
+
+set O a O reminder O for O credit B-reminder_type card I-reminder_type bill I-reminder_type on O 1st B-day august B-month
+
+remind O me O to O pay O my O mobile B-reminder_type recharge I-reminder_type after O 5 B-days days I-days
+
+remind O me O to O pay O my O mobile B-reminder_type recharge I-reminder_type after O 6 B-days days I-days
+
+remind O me O in O 6 B-days days I-days about O mobile B-reminder_typer recharge I-reminder_type 
+
+remind O me O day B-days after I-days tomorrow I-days about O Mobile B-reminder_type recharge I-reminder_type
+
+remind O me O to O pay O my O gas B-reminder_type bill I-reminder_type day B-days after I-days tomorrow I-days
+
+remind O me O to O pay O my O mobile B-reminder_type recharge I-reminder_type in O 6 B-days days I-days
+
+remind O me O tomorrow B-days about O credit B-reminder-type card I-reminder_type bill I-reminder_type
+
+remind O me O to O pay O my O electricity B-reminder_type bill I-reminder_type tomorrow B-days
+
+remind O me O to O pay O my O gas B-reminder_type bill I-reminder_type tomorrow B-days
+
+remind O me O to O pay O my O mobile B-reminder_type recharge I-reminder_type tomorrow B-days
+
+remind O me O to O pay O my O mobile B-reminder_type recharge I-reminder_type bill I-reminder_type  tomorrow B-days
+
+remind O me O on O 15 B-day august B-month about O loan B-reminder_type EMI I-reminder_type
+
+remind O me O tomorrow B-days about O loan B-reminder-type EMI I-reminder_type
+
+remind O me O in O 6 B-days days I-days about O my O electricity B-reminder_type bill I-reminder_type
