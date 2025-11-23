@@ -6,9 +6,10 @@ document.addEventListener("DOMContentLoaded", function() {
     const sendBtn = document.getElementById('send-btn');
     const voiceBtn = document.getElementById('start-voice-btn');
     
-    let mediaRecorder;
+    let mediaRecorder = null;
     let audioChunks = [];
     let isRecording = false;
+
 
     // --- Text Message ---\r\n    sendBtn.addEventListener('click', () => {
         const text = chatInput.value.trim();
@@ -17,9 +18,10 @@ document.addEventListener("DOMContentLoaded", function() {
             sendTextToModel(text);
             chatInput.value = '';
         }
-    });
+});
 
-    // --- Voice Logic (Security Enabled) ---\r\n    voiceBtn.addEventListener('click', async () => {
+    // --- Voice Logic (Security Enabled) ---\r\n   
+    voiceBtn.addEventListener('click', async () => {
         if (!isRecording) {
             startRecording();
         } else {
@@ -145,4 +147,3 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-});
