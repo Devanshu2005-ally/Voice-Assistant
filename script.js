@@ -1,12 +1,17 @@
 document.addEventListener("DOMContentLoaded", function() {
 
+    // --- CONFIGURATION ---
+    // FIXED: Explicitly define the API URL.
+    const API_URL = 'http://127.0.0.1:8000'; 
+    // ---------------------
+
     // Get all necessary DOM elements
-    const assistantIcon = document.getElementById('assistant-icon'); // <-- NEW: Assistant icon to open chat
-    const closeChatBtn = document.getElementById('close-chat'); // <-- NEW: Close button
+    const assistantIcon = document.getElementById('assistant-icon'); 
+    const closeChatBtn = document.getElementById('close-chat'); 
     const chatBox = document.getElementById('chat-assistant-box');
     const chatInput = document.getElementById('chat-input');
     const chatBody = document.getElementById('chat-body');
-    const sendBtn = document.getElementById('send-btn');
+    const sendBtn = document.getElementById('send-btn'); // FIXED: This element now exists in index.html
     const voiceBtn = document.getElementById('start-voice-btn');
     const languageSelector = document.getElementById('language-selector');
     
@@ -31,19 +36,58 @@ document.addEventListener("DOMContentLoaded", function() {
         assistantIcon.style.display = 'flex'; // Show the floating icon
     });
     // ---------------------------------
-
+    
     // --- Text Message ---
+    // FIXED: Centralized function for text message sending
+    function sendTextMessage(message) {
+        if (message.trim() === '') return;
+
+        addMessageToChat(message, 'user');
+        chatInput.value = ''; // Clear input immediately
+        
+        // Disable input while waiting for response
+        chatInput.disabled = true;
+        
+        fetch(`${API_URL}/chat/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: message,
+                language: getCurrentLanguage(),
+                user_id: "user" // Hardcoded for demo/user 1
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            addMessageToChat(data.response, 'bot');
+            speakResponse(data.response);
+        })
+        .catch(error => {
+            console.error("Text chat connection failed:", error);
+            addMessageToChat("Connection failed. Is the FastAPI server running?", 'bot');
+        })
+        .finally(() => {
+            chatInput.disabled = false;
+            chatInput.focus();
+        });
+    }
+
     sendBtn.addEventListener('click', () => {
-        const text = chatInput.value.trim();
-        if (text) {
-            addMessageToChat(text, 'user');
-            sendTextToModel(text);
-            chatInput.value = '';
+        sendTextMessage(chatInput.value);
+    });
+
+    // NEW: Add support for 'Enter' key press
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Prevent default newline behavior
+            sendTextMessage(chatInput.value);
         }
     });
 
-    // --- Voice Logic (Security Enabled) ---
-    voiceBtn.addEventListener('click', async () => {
+    // --- Voice Message ---
+    voiceBtn.addEventListener('click', () => {
         if (!isRecording) {
             startRecording();
         } else {
@@ -51,116 +95,57 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // --- Voice Recording Functions ---
-    async function startRecording() {
-        if (isRecording) return; // Prevent double-click
-        
-        // **Critical: Request Microphone Access**
-        try {
-            // Check if MediaRecorder is available (modern browsers only)
-            if (!window.MediaRecorder) {
-                console.error("Browser does not support MediaRecorder.");
-                addMessageToChat('Error: Your browser does not support voice input.', 'bot');
-                return;
-            }
-            
-            // This line triggers the browser's permission pop-up
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            
-            // Successfully started stream, now start recording
-            mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/wav' }); // Explicitly set mimeType
-            audioChunks = [];
+    function startRecording() {
+        audioChunks = [];
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.start();
+                isRecording = true;
+                
+                voiceBtn.classList.add('recording');
+                voiceBtn.innerHTML = '🔴 Stop'; // Simple text indicator for recording
+                
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
 
-            mediaRecorder.ondataavailable = event => {
-                audioChunks.push(event.data);
-            };
-
-            mediaRecorder.onstop = async () => {
-                // Ensure all tracks are stopped to release the mic
-                stream.getTracks().forEach(track => track.stop());
-
-                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                await sendAudioToModel(audioBlob);
-            };
-
-            mediaRecorder.start();
-            isRecording = true;
-            voiceBtn.innerHTML = '🛑'; // Change icon to stop (or text)
-            addMessageToChat('🎙️ Recording... Click again when finished.', 'bot-status');
-        
-        } catch (error) {
-            console.error('Microphone access denied or error:', error);
-            // Display an informative error message to the user
-            let errorMessage = 'Error: Could not access microphone.';
-            if (error.name === 'NotAllowedError' || error.name === 'SecurityError') {
-                errorMessage = '❌ Permission denied. Please enable microphone access for this site.';
-            } else if (error.name === 'NotFoundError') {
-                 errorMessage = '❌ No microphone found. Please connect one.';
-            }
-            addMessageToChat(errorMessage, 'bot');
-            voiceBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1.2-9.1c0-.66.54-1.2 1.2-1.2s1.2.54 1.2 1.2l-.01 6.2c0 .66-.53 1.2-1.19 1.2s-1.2-.54-1.2-1.2V4.9zm6.5 6.1c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>'; // Reset button to SVG icon
-            isRecording = false;
-        }
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { 'type': 'audio/wav' });
+                    sendAudioToServer(audioBlob);
+                    stream.getTracks().forEach(track => track.stop()); // Stop the mic input stream
+                };
+            })
+            .catch(error => {
+                console.error("Microphone access failed:", error);
+                alert("Microphone access denied or failed. Check browser permissions.");
+            });
     }
 
     function stopRecording() {
-        if (mediaRecorder && isRecording) {
-            mediaRecorder.stop();
-            isRecording = false;
-            voiceBtn.innerHTML = '⚙️'; // Show processing icon/text
-            addMessageToChat('Recording stopped. Processing...', 'bot-status');
-        }
+        mediaRecorder.stop();
+        isRecording = false;
+        voiceBtn.classList.remove('recording');
+        voiceBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3.93-33-3-5.3 3c0 3.93-3.3 3-5.3 3S4 17 4 11H2c0 4.84 3.44 8.8 8 9.8V23h4v-2.2c4.56-1.01 8-4.97 8-9.8h-2z"/></svg>';
     }
 
-    // --- API Interaction Functions ---
-    async function sendTextToModel(text) {
-        addMessageToChat("Processing text...", 'bot');
-        
-        const payload = {
-            message: text,
-            user_id: "user", // Hardcoded for demo
-            language: getCurrentLanguage() // Corrected: Use selected language
-        };
-        
-        try {
-            const response = await fetch('http://127.0.0.1:8000/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
-            
-            const data = await response.json();
-            addMessageToChat(data.response, 'bot');
-            speakResponse(data.response);
-        } catch (error) {
-            console.error("Text chat connection failed:", error);
-            addMessageToChat("Connection failed. Is the FastAPI server running?", 'bot');
-            speakResponse("I could not connect to the server.");
-        }
-    }
-
-    async function sendAudioToModel(audioBlob) {
-        addMessageToChat("Processing voice security...", 'bot');
-        voiceBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1.2-9.1c0-.66.54-1.2 1.2-1.2s1.2.54 1.2 1.2l-.01 6.2c0 .66-.53 1.2-1.19 1.2s-1.2-.54-1.2-1.2V4.9zm6.5 6.1c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>'; // Reset button icon here
+    function sendAudioToServer(audioBlob) {
+        addMessageToChat("Sending audio for transcription...", 'user');
         
         const formData = new FormData();
-        formData.append("audio", audioBlob, "input.wav"); 
-        formData.append("user_id", "user"); // Hardcoded user for demo
-        formData.append("language", getCurrentLanguage()); // Corrected: Use selected language
+        formData.append("audio_file", audioBlob, "audio.wav");
+        formData.append("language", getCurrentLanguage());
+        formData.append("user_id", "user"); // Hardcoded for demo/user 1
 
-        try {
-            const response = await fetch('http://127.0.0.1:8000/voice-chat', {
-                method: 'POST',
-                body: formData
-            });
-            
-            const data = await response.json();
-
-            if (data.verified === false) {
-                // Security Failed
-                addMessageToChat("❌ Voice Verification Failed: " + data.response, 'bot');
+        fetch(`${API_URL}/voice-chat/`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.is_verified) {
+                // Security Failure
+                addMessageToChat("🚨 Voice Verification Failed: " + data.response, 'bot');
                 speakResponse("Security check failed. " + data.response);
             } else {
                 // Success
@@ -168,11 +153,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 addMessageToChat(data.response, 'bot');
                 speakResponse(data.response);
             }
-        } catch (error) {
+        })
+        .catch(error => {
             console.error("Voice chat connection failed:", error);
             addMessageToChat("Connection failed. Is the FastAPI server running?", 'bot');
             speakResponse("I could not connect to the server.");
-        }
+        })
     }
 
     // --- Utility Functions ---

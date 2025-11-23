@@ -8,6 +8,8 @@ import librosa
 import soundfile as sf
 from pathlib import Path
 from database import User, get_db_session # Import User model and session helper
+import os
+
 
 def deserialize_embedding(binary_data):
     """Converts binary data from the database back to a numpy array (embedding)."""
@@ -19,7 +21,14 @@ def deserialize_embedding(binary_data):
 class VoiceSecurity:
     def __init__(self):
         print("Loading Voice Encoder...")
-        self.encoder = VoiceEncoder()
+        try:
+            self.encoder = VoiceEncoder()
+            self.loaded = True
+            print("✅ Voice Encoder Ready")
+        except Exception as e:
+            print(f"❌ ERROR: Failed to load Resemblyzer VoiceEncoder. Voice verification disabled. Error: {e}")
+            self.encoder = None
+            self.loaded = False
 
     def amplify_audio(self, audio, target_peak=0.9):
         current_peak = np.max(np.abs(audio)) + 1e-8
@@ -34,19 +43,22 @@ class VoiceSecurity:
         # Normalize
         audio_np = audio_np / (np.max(np.abs(audio_np)) + 1e-8)
         
-        # Reduce Noise
-        if len(audio_np) > 4000:
-            noise_sample = audio_np[:4000]
-            cleaned = nr.reduce_noise(y=audio_np, y_noise=noise_sample, sr=sr, prop_decrease=0.8)
-        else:
-            cleaned = audio_np # Audio too short to profile noise
-            
-        return self.amplify_audio(cleaned)
+        # Noise Reduction
+        reduced_noise = nr.reduce_noise(y=audio_np, sr=sr, prop_decrease=0.8, n_fft=512)
+        
+        # Amplify
+        cleaned_audio = self.amplify_audio(reduced_noise)
+        
+        # Save to a temporary file path required by preprocess_wav
+        temp_cleaned_path = f"{file_path}_cleaned.wav"
+        sf.write(temp_cleaned_path, cleaned_audio, sr)
+        
+        return temp_cleaned_path
 
-    def verify_user(self, input_audio_path, user_id, threshold=0.75):
-        """
-        Returns (is_verified: bool, score: float, message: str)
-        """
+    def verify_user(self, input_audio_path: str, user_id: str, threshold=0.75):
+        if not self.loaded:
+            return False, 0.0, "Voice Encoder not loaded. Verification disabled."
+            
         # Mapping "user" string to DB ID 1 for demo consistency with main.py
         db_id = 1
         
@@ -62,16 +74,17 @@ class VoiceSecurity:
         db.close()
         
         if not binary_embed:
-            return False, 0.0, "No reference voice embedding found in database."
+            return False, 0.0, "No reference voice embedding found in database. Run 'python registeration.py'."
             
         mean_embed = deserialize_embedding(binary_embed)
         # Normalize the mean embedding retrieved from DB
         mean_embed = mean_embed / norm(mean_embed)
 
+        cleaned_audio_path = None
         try:
             # 2. Preprocess the incoming audio
-            cleaned_audio = self.clean_audio(input_audio_path)
-            wav = preprocess_wav(cleaned_audio)
+            cleaned_audio_path = self.clean_audio(input_audio_path)
+            wav = preprocess_wav(Path(cleaned_audio_path))
             embedding_new = self.encoder.embed_utterance(wav)
             embedding_new = embedding_new / norm(embedding_new)
 
@@ -82,7 +95,12 @@ class VoiceSecurity:
             return is_verified, float(score), "Access Granted" if is_verified else "Voice Mismatch"
 
         except Exception as e:
-            return False, 0.0, f"Error during verification: {str(e)}"
+            print(f"Error during voice verification process: {e}")
+            return False, 0.0, f"Processing Error: {e}"
+        finally:
+            # Cleanup the temporary cleaned audio file
+            if cleaned_audio_path and os.path.exists(cleaned_audio_path):
+                os.remove(cleaned_audio_path)
 
-# Singleton instance
+# Instantiate the Voice Security class
 voice_guard = VoiceSecurity()

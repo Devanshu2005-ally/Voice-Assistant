@@ -5,12 +5,15 @@ from pydantic import BaseModel
 import shutil
 import os
 import whisper 
+import soundfile as sf
+import numpy as np
 
 import database
 # UPDATED: Import Transaction model
 from database import User, Account, Loan, CreditCard, Transaction, get_db 
 import ml_service
 from voice_security import voice_guard # Import our new security class
+
 
 database.init_db()
 
@@ -27,133 +30,105 @@ app.add_middleware(
 # Load Whisper model for STT
 print("⏳ Loading Whisper Model...")
 # NOTE: Ensure you have the 'base' whisper model installed or change to 'tiny' for speed
-whisper_model = whisper.load_model("base") 
-print("✅ Whisper Ready")
+try:
+    whisper_model = whisper.load_model("base") 
+    print("✅ Whisper Ready")
+except Exception as e:
+    print(f"❌ Whisper Model Load Failed. Ensure 'ffmpeg' is installed and PATH is set. Error: {e}")
+    whisper_model = None
+
+# Initialize Voice Security
+voice_guard = voice_guard() 
 
 class ChatRequest(BaseModel):
     message: str
     language: str = "en-US"
     user_id: str = "user" # Changed to String to match filenames
 
+class ChatResponse(BaseModel):
+    response: str
+    is_verified: bool = True
+    transcription: str | None = None
+
+
 def route_to_db(intent, slots, sub_intent, user_id, db: Session):
     # Mapping "user" string to ID 1 for DB demo
     db_id = 1 
-    user = db.query(User).filter(User.id == db_id).first()
+    user = db.query(User).filter(User.id == db_id).first() 
     
+    if not user:
+        return "I could not find your user profile in the database."
+
+    # --- Intent Handling ---
     if intent == "check_balance":
-        acc = db.query(Account).filter(Account.user_id == db_id).first()
-        return f"Your balance is ₹{acc.balance:,.2f}." if acc else "No account."
+        account = db.query(Account).filter(Account.user_id == db_id).first()
+        if account:
+            return f"Your current account balance is ₹{account.balance:,.2f}."
+        else:
+            return "I couldn't retrieve your account balance."
 
-    # NEW: Money Transfer/Payment Logic
-    if intent == "make_payment":
-        try:
-            # Assumes ML service correctly extracted the 'amount' slot
-            amount_str = slots.get('amount')
-            
-            # Simple check for required slot
-            if not amount_str:
-                return "Please specify the amount you wish to transfer."
-            
-            # Clean and convert the slot value to float
-            # Note: This simple cleaning assumes the amount is the only thing in the slot
-            amount = float(amount_str.replace('₹', '').replace(',', '').strip())
-            
-            acc = db.query(Account).filter(Account.user_id == db_id).first()
-            if not acc: return "No account found to process payment."
-            
-            if acc.balance >= amount:
-                acc.balance -= amount # Debit the user's account
-                
-                # Log the transaction
-                db.add(Transaction(user_id=db_id, transaction_date="2025-11-23", 
-                                   description=f"Fund Transfer to {slots.get('recipient', 'External Account')}", 
-                                   amount=amount, transaction_type="Debit"))
-                
-                db.commit()
-                # In a real system, you would credit a recipient account here.
-                return f"Successfully transferred ₹{amount:,.2f}. Your new balance is ₹{acc.balance:,.2f}."
-            else:
-                return f"Insufficient balance. Your current balance is only ₹{acc.balance:,.2f}."
-                
-        except ValueError:
-            return "I could not understand the transfer amount. Please provide a valid number."
-        except Exception as e:
-            print(f"Payment error: {e}")
-            return "An unexpected error occurred while trying to process the payment."
+    elif intent == "transaction_history":
+        # Logic to fetch and summarize last few transactions
+        transactions = db.query(Transaction).filter(Transaction.user_id == db_id).order_by(Transaction.transaction_date.desc()).limit(3).all()
+        if transactions:
+            history = [f"{t.transaction_date}: {t.description} ({t.amount:.2f})" for t in transactions]
+            return "Here are your last 3 transactions:\n" + "\n".join(history)
+        else:
+            return "No recent transactions found."
 
-    if intent == "loan_inquiry":
+    elif intent == "loan_inquiry":
+        loan = db.query(Loan).filter(Loan.user_id == db_id).first()
         if sub_intent == "loan_status":
-            loans = db.query(Loan).filter(Loan.user_id == db_id).all()
-            if loans: return f"Your {loans[0].loan_type} status is: {loans[0].status}."
-            return "No active loans."
-        return "You are eligible for a Personal Loan."
+             return f"Your {loan.loan_type} status is currently '{loan.status}'. The amount is ₹{loan.amount:,.0f}."
+        elif sub_intent == "loan_eligibility":
+            return "Based on your current profile, you are pre-approved for a Personal Loan up to ₹5,00,000."
+        elif sub_intent == "loan_interest_rate":
+            return "Our current Home Loan interest rate is 8.5% p.a."
+        else:
+            return "I can check your loan status, eligibility, or current interest rates. Which one are you interested in?"
 
-    if intent == "credit_limit":
+    elif intent == "credit_limit":
         card = db.query(CreditCard).filter(CreditCard.user_id == db_id).first()
-        if not card: return "No credit card found."
-        if sub_intent == "credit_limit_used": return f"Used limit: ₹{card.limit_used:,.2f}"
-        return f"Available limit: ₹{card.limit_available:,.2f}"
+        if card:
+            if sub_intent == "available_limit":
+                available = card.limit_available - card.limit_used
+                return f"Your available credit limit on your {card.card_name} is ₹{available:,.2f}."
+            elif sub_intent == "used_limit":
+                return f"Your used credit limit on your {card.card_name} is ₹{card.limit_used:,.2f}."
+            else:
+                return f"Your total credit limit is ₹{card.limit_available:,.0f}. Used: ₹{card.limit_used:,.0f}. Available: ₹{card.limit_available - card.limit_used:,.0f}."
+        else:
+            return "I couldn't find your credit card details."
 
-    # NEW: Transaction History Logic
-    if intent == "transaction_history":
-        # Fetch the last 3 transactions for the user
-        transactions = db.query(Transaction).filter(Transaction.user_id == db_id).order_by(Transaction.id.desc()).limit(3).all()
+    elif intent == "transfer":
+        # Example Slot-Filling Logic
+        amount = slots.get('amount')
+        recipient = slots.get('recipient')
         
-        if not transactions:
-            return "I couldn't find any recent transactions for your account."
+        if amount and recipient:
+            # Simulate a transfer
+            amount_val = float(amount.replace('₹', '').replace(',', '').replace('INR', '').replace('rupees', '').strip())
             
-        summary = ["Your three most recent transactions are:"]
-        for t in transactions:
-            # Format the output for natural conversation
-            summary.append(f"On {t.transaction_date}, a {t.transaction_type} of ₹{t.amount:,.2f} for {t.description}.")
-            
-        return "\n".join(summary)
+            # Simple check if balance is sufficient
+            account = db.query(Account).filter(Account.user_id == db_id).first()
+            if account.balance >= amount_val:
+                # Update DB (Simulation)
+                account.balance -= amount_val
+                db.add(Transaction(user_id=db_id, transaction_date="TODAY", description=f"Transfer to {recipient}", amount=-amount_val))
+                db.commit()
+                return f"Transfer successful. ₹{amount_val:,.2f} sent to {recipient}. Your new balance is ₹{account.balance:,.2f}."
+            else:
+                return "Transfer failed: Insufficient balance."
+        else:
+            return "To complete the transfer, please specify the amount and the recipient."
 
+    elif intent == "general_query":
+        return "I processed your request, but I currently only support banking queries like checking balance, transfers, loans, and credit cards. Please try rephrasing."
 
-    return "I processed your request but need more training on this specific topic."
+    else:
+        # Catch-all fallback
+        return "I processed your request but need more training data to handle this specific intent. Please try another banking query."
 
-@app.post("/chat")
-async def text_chat_endpoint(request: ChatRequest, db: Session = Depends(get_db)):
-    """Standard Text Chat (No Voice Security Check)"""
-    return process_request(request.message, request.language, request.user_id, db)
-
-@app.post("/voice-chat")
-async def voice_chat_endpoint(
-    audio: UploadFile = File(...),
-    language: str = Form("en-US"),
-    user_id: str = Form("user"),
-    db: Session = Depends(get_db)
-):
-    """Voice Endpoint: Verifies Biometrics first, then processes intent"""
-    
-    # 1. Save temporary audio file
-    temp_filename = f"temp_{user_id}.wav"
-    with open(temp_filename, "wb") as buffer:
-        shutil.copyfileobj(audio.file, buffer)
-
-    try:
-        # 2. VOICE SECURITY CHECK
-        print(f"🔐 Verifying voice for {user_id}...")
-        is_verified, score, msg = voice_guard.verify_user(temp_filename, user_id)
-        print(f"   ↳ Result: {msg} (Score: {score:.2f})")
-
-        if not is_verified:
-            return {"response": f"Security Alert: Voice verification failed. (Score: {score:.2f})", "verified": False}
-
-        # 3. Speech to Text (Transcribe) using Whisper
-        result = whisper_model.transcribe(temp_filename)
-        transcribed_text = result["text"]
-        print(f"🗣️ Transcribed: {transcribed_text}")
-
-        # 4. Process Intent
-        response_data = process_request(transcribed_text, language, user_id, db)
-        response_data["verified"] = True
-        return response_data
-
-    finally:
-        # Cleanup
-        if os.path.exists(temp_filename):
-            os.remove(temp_filename)
 
 def process_request(text, language, user_id, db):
     # Logic shared between text and voice
@@ -184,13 +159,65 @@ def process_request(text, language, user_id, db):
             response_text = translation.text
         except: pass
         
-    return {
-        "response": response_text,
-        "transcription": text,
-        "intent": intent,
-        "slots": slots # Added slots to the response
-    }
+    return response_text
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+@app.post("/chat/", response_model=ChatResponse)
+def handle_chat(request: ChatRequest, db: Session = Depends(get_db)):
+    print(f"Text Input: {request.message} (Lang: {request.language})")
+    response_text = process_request(request.message, request.language, request.user_id, db)
+    return ChatResponse(response=response_text)
+
+
+@app.post("/voice-chat/", response_model=ChatResponse)
+async def handle_voice_chat(
+    audio_file: UploadFile = File(...),
+    language: str = Form("en-US"),
+    user_id: str = Form("user"),
+    db: Session = Depends(get_db)
+):
+    if not whisper_model:
+        raise HTTPException(status_code=500, detail="Whisper model not loaded. Check server logs.")
+
+    temp_filename = f"temp_audio_{user_id}.wav"
+    
+    # Save the uploaded file temporarily
+    try:
+        with open(temp_filename, "wb") as buffer:
+            shutil.copyfileobj(audio_file.file, buffer)
+        
+        # --- 1. VOICE SECURITY CHECK ---
+        is_verified, score, security_response = voice_guard.verify_user(temp_filename, user_id)
+        print(f"Voice Verification Score: {score:.2f}, Result: {security_response}")
+
+        if not is_verified:
+            # Security failed: Return immediate error response
+            return ChatResponse(
+                response=f"Security Alert: Voice verification failed. Score: {score:.2f}. Please try again.",
+                is_verified=False,
+                transcription="Security check required."
+            )
+
+        # --- 2. SPEECH-TO-TEXT (STT) ---
+        # Whisper expects a path or a NumPy array. Load with soundfile for Whisper's internal processing.
+        audio_np, _ = sf.read(temp_filename, dtype='float32')
+        result = whisper_model.transcribe(audio_np, language="en" if language == 'en-US' else 'hi')
+        transcription = result["text"].strip()
+
+        print(f"Transcription: {transcription} (Lang: {language})")
+
+        if not transcription:
+             return ChatResponse(response="I couldn't understand the audio. Please speak clearly.", is_verified=True, transcription="")
+
+        # --- 3. ML/DB Processing ---
+        response_text = process_request(transcription, language, user_id, db)
+        
+        return ChatResponse(response=response_text, is_verified=True, transcription=transcription)
+
+    except Exception as e:
+        print(f"An error occurred during voice chat processing: {e}")
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {e}")
+    finally:
+        # Cleanup
+        if os.path.exists(temp_filename):
+            os.remove(temp_filename)

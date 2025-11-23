@@ -9,6 +9,15 @@ import numpy as np
 import io
 import os
 from database import User, get_db_session # Import for DB interaction
+import sys
+
+# Ensure the Voice Encoder is loaded at startup
+try:
+    _encoder = VoiceEncoder()
+except Exception as e:
+    print(f"❌ ERROR: Failed to load Resemblyzer VoiceEncoder. Check dependencies like 'numpy', 'librosa', and 'scipy'. Error: {e}")
+    # Exit registration script gracefully if encoder fails
+    sys.exit(1)
 
 
 def serialize_embedding(embedding):
@@ -26,45 +35,56 @@ def amplify_audio(audio, target_peak=0.8):
         return amplified
 
 
-def registeration(user_id):
+def registeration():
     fs = 16000
     duration = 7
-    encoder = VoiceEncoder()
+    encoder = _encoder # Use the globally loaded encoder
     embeddings = [] # List to collect all 3 embeddings
     
     temp_files = [] # To clean up temporary audio files
+    user_id = "user" # Hardcoded for demo consistency
 
     for i in range(1, 4):  # exactly 3 samples
-        print(f"\n🎤 Recording sample {i}/3... Speak now!")
-
-        # File names for this sample
-        raw_filename = f"temp_{user_id}_raw_{i}.wav"
-        cleaned_filename = f"temp_{user_id}_cleaned_{i}.wav"
+        raw_filename = f"temp_raw_{user_id}_{i}.wav"
+        cleaned_filename = f"temp_cleaned_{user_id}_{i}.wav"
         temp_files.extend([raw_filename, cleaned_filename])
+        
+        try:
+            # --- Recording ---
+            print(f"\n🎤 Recording sample {i}/3 ({duration} seconds)... Speak now!")
+            recording = sd.rec(int(duration * fs), samplerate=fs, channels=1, dtype='float64')
+            sd.wait()  # Wait until recording is finished
+            
+            # Save raw recording
+            sf.write(raw_filename, recording, fs)
+            
+            # --- Preprocessing ---
+            # 1. Noise Reduction
+            # Convert to float32 as expected by noisereduce
+            audio_np = recording.flatten().astype(np.float32)
+            reduced_noise = nr.reduce_noise(y=audio_np, sr=fs, prop_decrease=0.8, n_fft=512)
+            
+            # 2. Amplify
+            amplified = amplify_audio(reduced_noise, target_peak=0.9)
 
-        # Recording
-        audio = sd.rec(int(duration * fs), samplerate=fs, channels=1, dtype='float32')
-        sd.wait()
-        sf.write(raw_filename, audio, fs)
-        print(f"📁 Raw audio saved temporarily: {raw_filename}")
+            sf.write(cleaned_filename, amplified, fs)
+            print(f"✨ Cleaned audio saved temporarily: {cleaned_filename}")
 
-        # Cleaning
-        audio_np, sr = librosa.load(raw_filename, sr=16000)
-        audio_np = audio_np / (np.max(np.abs(audio_np)) + 1e-8)
+            # Generating and collecting the embedding
+            # preprocess_wav expects 16kHz audio
+            wav = preprocess_wav(Path(cleaned_filename)) 
+            embedding = encoder.embed_utterance(wav)
+            embeddings.append(embedding)
+            print(f"📌 Embedding generated for sample {i}")
+            
+        except Exception as e:
+            print(f"\n❌ ERROR during recording/processing sample {i}: {e}")
+            print("Ensure your microphone is connected and system permissions are granted.")
+            # Clear all temporary files and exit on failure
+            for f in temp_files:
+                if os.path.exists(f): os.remove(f)
+            sys.exit(1)
 
-        # Noise reduction
-        noise_sample = audio_np[:4000] if len(audio_np) > 4000 else audio_np
-        denoised = nr.reduce_noise(y=audio_np, y_noise=noise_sample, sr=sr, prop_decrease=0.9)
-        amplified = amplify_audio(denoised, target_peak=0.9)
-
-        sf.write(cleaned_filename, amplified, sr)
-        print(f"✨ Cleaned audio saved temporarily: {cleaned_filename}")
-
-        # Generating and collecting the embedding
-        wav = preprocess_wav(Path(cleaned_filename))
-        embedding = encoder.embed_utterance(wav)
-        embeddings.append(embedding)
-        print(f"📌 Embedding generated for sample {i}")
         
     # --- DB Storage Logic ---
     
@@ -89,15 +109,22 @@ def registeration(user_id):
             db.commit()
             print(f"\n✅ Mean embedding stored in the database for User ID {db_id}.")
         else:
-            print(f"\n❌ Error: User ID {db_id} not found in database.")
+            print(f"\n❌ Error: User ID {db_id} not found in database. Run 'python main.py' once to initialize the DB.")
         
         db.close()
         
-    # --- Final Cleanup ---
+    # --- Cleanup ---
     for f in temp_files:
-        if os.path.exists(f):
-            os.remove(f)
-    print("🧹 Temporary audio files cleaned up.")
+        if os.path.exists(f): 
+            try:
+                os.remove(f)
+            except Exception as e:
+                print(f"Warning: Could not remove temporary file {f}. {e}")
+    print("\nCleanup complete.")
 
 
-registeration('user')
+if __name__ == "__main__":
+    # Initialize the DB just in case it wasn't run by main.py
+    from database import init_db
+    init_db()
+    registeration()

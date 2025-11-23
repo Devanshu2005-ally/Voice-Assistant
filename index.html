@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Bank - Secure & Simple</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css"> 
 </head>
 <body>
 
@@ -39,36 +39,31 @@
                 </div>
                 <div class="service-card">
                     <h3>Savings Accounts</h3>
-                    <p>Grow your money faster with our high-yield savings.</p>
+                    <p>High-yield savings to make your money grow.</p>
                 </div>
                 <div class="service-card">
-                    <h3>Home Loans</h3>
-                    <p>Get the best rates for your new home.</p>
+                    <h3>Credit Cards</h3>
+                    <p>Find the perfect card for your lifestyle and needs.</p>
+                    </div>
+                <div class="service-card">
+                    <h3>Personal Loans</h3>
+                    <p>Flexible loans for your big life moments.</p>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 MyBank. All rights reserved.</p>
-        </div>
-    </footer>
+    <div id="assistant-icon" style="position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; background-color: #007bff; border-radius: 50%; color: white; display: flex; justify-content: center; align-items: center; font-size: 24px; cursor: pointer; z-index: 1000;">
+        🤖
+    </div>
 
-    <button id="assistant-icon" aria-label="Open chat assistant">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M0 0h24v24H0V0z" fill="none"/>
-            <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1.2-9.1c0-.66.54-1.2 1.2-1.2s1.2.54 1.2 1.2l-.01 6.2c0 .66-.53 1.2-1.19 1.2s-1.2-.54-1.2-1.2V4.9zm6.5 6.1c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
-        </svg>
-    </button>
-
-    <div id="chat-assistant-box">
+    <div class="chat-assistant-box" id="chat-assistant-box">
         <div class="chat-header">
             <div class="header-title-group">
                 <strong id="chat-title">Virtual Assistant</strong>
                 <select id="language-selector">
                     <option value="en-US">English</option>
-                    <option value="hi-IN">हिंदी (Hindi)</option>
+                    <option value="hi-IN">हिन्दी (Hindi)</option> 
                 </select>
             </div>
             <button id="close-chat" aria-label="Close chat">&times;</button>
@@ -82,17 +77,28 @@
             <div id="chat-status"></div>
             <input type="text" id="chat-input" placeholder="Type your message...">
             
-            <button id="start-voice-btn" aria-label="Start voice input">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M0 0h24v24H0V0z" fill="none"/>
-                    <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1.2-9.1c0-.66.54-1.2 1.2-1.2s1.2.54 1.2 1.2l-.01 6.2c0 .66-.53 1.2-1.19 1.2s-1.2-.54-1.2-1.2V4.9zm6.5 6.1c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
+            <button id="send-btn" aria-label="Send message">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                    <path d="M0 0h24v24H0z" fill="none"/>
                 </svg>
             </button>
             
-            <button id="send-btn">Send</button>
+            <button id="start-voice-btn" aria-label="Start voice input">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M0 0h24v24H0V0z" fill="none"/>
+                    <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3.93-3.3 3-5.3 3c0 3.93-3.3 3-5.3 3S4 17 4 11H2c0 4.84 3.44 8.8 8 9.8V23h4v-2.2c4.56-1.01 8-4.97 8-9.8h-2z"/>
+                </svg>
+            </button>
         </div>
     </div>
-
+    
     <script src="script.js"></script>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 My Bank. All rights reserved.</p>
+        </div>
+    </footer>
 </body>
 </html>

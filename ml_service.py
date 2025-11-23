@@ -10,8 +10,11 @@ import nltk
 try:
     nltk.data.find('taggers/averaged_perceptron_tagger')
 except LookupError:
+    print("⏳ Downloading NLTK resources...")
     nltk.download('averaged_perceptron_tagger')
     nltk.download('punkt')
+    print("✅ NLTK resources downloaded.")
+
 
 class MLEngine:
     def __init__(self):
@@ -23,13 +26,23 @@ class MLEngine:
         
         # Load Intent Model
         if os.path.exists("intent_model.pkl") and os.path.exists("tfidf_vectorizer.pkl"):
-            self.intent_model = joblib.load("intent_model.pkl")
-            self.tfidf = joblib.load("tfidf_vectorizer.pkl")
+            try:
+                self.intent_model = joblib.load("intent_model.pkl")
+                self.tfidf = joblib.load("tfidf_vectorizer.pkl")
+            except Exception as e:
+                 print(f"❌ Error loading Intent Model: {e}. Run 'python intent_model.py' to generate.")
+        else:
+            print("⚠️ Intent Model files (intent_model.pkl/tfidf_vectorizer.pkl) not found. Intent prediction disabled.")
         
         # Load Slot Filling Model
         if os.path.exists("slot_filling_crf_model.pkl"):
-            with open("slot_filling_crf_model.pkl", "rb") as f:
-                self.crf = pickle.load(f)
+            try:
+                with open("slot_filling_crf_model.pkl", "rb") as f:
+                    self.crf = pickle.load(f)
+            except Exception as e:
+                 print(f"❌ Error loading Slot Filling Model: {e}. Run 'python slotfill.py' to generate.")
+        else:
+            print("⚠️ Slot Filling Model (slot_filling_crf_model.pkl) not found. Slot prediction disabled.")
 
         print("✅ Models loading sequence complete.")
 
@@ -41,20 +54,26 @@ class MLEngine:
     def predict_slots(self, text):
         if not self.crf: return {}
         
-        sentence_tokens = text.split()
-        
-        # FIX: Generate REAL POS tags using NLTK
-        # The feature.py expects tuple (word, postag)
-        pos_tags = nltk.pos_tag(sentence_tokens)
-        
-        features = sent2features(pos_tags)
+        # Tokenize and Tag: NLTK POS tagging is necessary to generate features expected by the CRF model.
+        sentence_tokens = nltk.word_tokenize(text)
         
         try:
+            # sentence_tagged is a list of (word, postag) tuples
+            sentence_tagged = nltk.pos_tag(sentence_tokens)
+        except LookupError:
+             # Fallback if resources fail. This is rare if the check in __init__ is successful.
+             sentence_tagged = [(w, 'NN') for w in sentence_tokens]
+
+        # sent2features expects (word, postag) which sentence_tagged provides.
+        features = sent2features(sentence_tagged)
+        
+        try:
+            # The CRF model predicts a list of labels (e.g., ['O', 'B-amount', 'I-amount', 'O'])
             pred = self.crf.predict([features])[0]
         except IndexError:
             return {}
         
-        # Extract slots
+        # Extract slots (I-O-B format)
         slots = {}
         current_slot = None
         current_vals = []
@@ -83,8 +102,9 @@ class MLEngine:
 
     def predict_credit_sub_intent(self, text):
         text = text.lower()
-        if "available" in text or "balance" in text: return "credit_limit_available"
-        if "used" in text or "due" in text: return "credit_limit_used"
+        if "available" in text or "left" in text: return "available_limit"
+        if "used" in text or "spent" in text: return "used_limit"
         return "general_credit_query"
 
+# Instantiate the ML Engine globally
 ml_engine = MLEngine()
