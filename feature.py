@@ -41,11 +41,6 @@ def word2features(sent, i):
 
     return features
 
+
 def sent2features(sent):
     return [word2features(sent, i) for i in range(len(sent))]
-
-def sent2labels(sent):
-    return [label for token, postag, label in sent]
-
-def sent2tokens(sent):
-    return [token for token, postag, label in sent]
