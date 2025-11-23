@@ -4,7 +4,11 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 import shutil
 import os
+import warnings
+
 import whisper 
+
+warnings.filterwarnings("ignore", message="FP16 is not supported on CPU; using FP32 instead")
 
 import database
 # UPDATED: Import Transaction model
@@ -127,10 +131,11 @@ async def voice_chat_endpoint(
     """Voice Endpoint: Verifies Biometrics first, then processes intent"""
     
     # 1. Save temporary audio file
-    temp_filename = f"temp_{user_id}.wav"
+    temp_filename = f"temp_{user_id}.webm"
     with open(temp_filename, "wb") as buffer:
         shutil.copyfileobj(audio.file, buffer)
 
+    wav_file_path = "converted_input.wav"
     try:
         # 2. VOICE SECURITY CHECK
         print(f"🔐 Verifying voice for {user_id}...")
@@ -140,20 +145,34 @@ async def voice_chat_endpoint(
         if not is_verified:
             return {"response": f"Security Alert: Voice verification failed. (Score: {score:.2f})", "verified": False}
 
+        
+
         # 3. Speech to Text (Transcribe) using Whisper
-        result = whisper_model.transcribe(temp_filename)
+        result = whisper_model.transcribe(wav_file_path)
         transcribed_text = result["text"]
         print(f"🗣️ Transcribed: {transcribed_text}")
 
         # 4. Process Intent
-        response_data = process_request(transcribed_text, language, user_id, db)
-        response_data["verified"] = True
-        return response_data
+        try:
+            response_data = process_request(transcribed_text, language, user_id, db)
+        except Exception as e:
+            print(f"⚠️ process_request error: {e}")
+            response_data = {"response": "Failed to process your request.", "transcription": transcribed_text}
+
+        return {
+            "is_verified": bool(is_verified), # Cast it again just to be safe
+            "transcription": response_data.get("transcription", transcribed_text),
+            "response": response_data["response"]
+        }
 
     finally:
-        # Cleanup
+        # 6. CRITICAL CLEANUP: Delete both the original WEBM and the converted WAV file
+        # Cleanup original WEBM file
         if os.path.exists(temp_filename):
             os.remove(temp_filename)
+        # Cleanup converted WAV file
+        if os.path.exists(wav_file_path):
+            os.remove(wav_file_path)
 
 def process_request(text, language, user_id, db):
     # Logic shared between text and voice
@@ -167,8 +186,10 @@ def process_request(text, language, user_id, db):
 
     # ML
     intent = ml_service.ml_engine.predict_intent(text)
+    print(intent)
     # The slots dictionary is critical for extracting the amount and recipient for the transfer
     slots = ml_service.ml_engine.predict_slots(text) 
+    print(slots)
     
     sub_intent = None
     if intent == "loan_inquiry": sub_intent = ml_service.ml_engine.predict_sub_intent(text)

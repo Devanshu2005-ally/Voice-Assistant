@@ -1,17 +1,13 @@
 import joblib
 import pickle
 import numpy as np
-from feature import sent2features
+from token_feature import sent2features
 from googletrans import Translator
 import os
-import nltk
 
-# Ensure necessary NLTK data is downloaded
-try:
-    nltk.data.find('taggers/averaged_perceptron_tagger')
-except LookupError:
-    nltk.download('averaged_perceptron_tagger')
-    nltk.download('punkt')
+
+
+
 
 class MLEngine:
     def __init__(self):
@@ -37,17 +33,17 @@ class MLEngine:
         if not self.intent_model: return "general_query"
         vect = self.tfidf.transform([text])
         return self.intent_model.predict(vect)[0]
-
+        
     def predict_slots(self, text):
         if not self.crf: return {}
         
-        sentence_tokens = text.split()
+        tokens = text.split()
         
         # FIX: Generate REAL POS tags using NLTK
         # The feature.py expects tuple (word, postag)
-        pos_tags = nltk.pos_tag(sentence_tokens)
         
-        features = sent2features(pos_tags)
+        
+        features = sent2features([(t, 'O') for t in tokens])
         
         try:
             pred = self.crf.predict([features])[0]
@@ -59,7 +55,7 @@ class MLEngine:
         current_slot = None
         current_vals = []
         
-        for token, label in zip(sentence_tokens, pred):
+        for token, label in zip(tokens, pred):
             if label.startswith("B-"):
                 if current_slot: slots[current_slot] = " ".join(current_vals)
                 current_slot = label[2:]
@@ -88,3 +84,4 @@ class MLEngine:
         return "general_credit_query"
 
 ml_engine = MLEngine()
+

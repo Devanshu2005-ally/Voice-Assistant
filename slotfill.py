@@ -1,7 +1,7 @@
 from sklearn.model_selection import train_test_split
 import sklearn_crfsuite
 from sklearn_crfsuite import metrics
-from feature import sent2features
+from token_feature import sent2features
 import pickle
 
 
@@ -74,9 +74,12 @@ print(metrics.flat_classification_report(
 
 
 
-tokens = ["Remind", "me", "to", "pay", "my", "electricity", "tomorrow"]
-features = sent2features([(t, 'O') for t in tokens])
-pred = crf.predict([features])[0]
-result = list(zip(tokens, pred))
-print(result)
+# tokens = ["Remind", "me", "to", "pay", "my", "electricity", "bill", "tomorrow"]
+# features = sent2features([(t, 'O') for t in tokens])
+# pred = crf.predict([features])[0]
+# result = list(zip(tokens, pred))
+# print(result)
 
+#saving the model
+with open("slot_filling_crf_model.pkl", "wb") as f:
+    pickle.dump(crf, f)

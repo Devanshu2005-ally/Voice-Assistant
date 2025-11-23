@@ -5,8 +5,10 @@ from resemblyzer import VoiceEncoder, preprocess_wav
 from numpy.linalg import norm
 import noisereduce as nr
 import librosa
+import subprocess
 import soundfile as sf
 from pathlib import Path
+import os
 from database import User, get_db_session # Import User model and session helper
 
 def deserialize_embedding(binary_data):
@@ -16,10 +18,14 @@ def deserialize_embedding(binary_data):
         # numpy.load expects a file-like object
         return np.load(f)
 
+
 class VoiceSecurity:
     def __init__(self):
         print("Loading Voice Encoder...")
         self.encoder = VoiceEncoder()
+
+
+   
 
     def amplify_audio(self, audio, target_peak=0.9):
         current_peak = np.max(np.abs(audio)) + 1e-8
@@ -29,6 +35,7 @@ class VoiceSecurity:
 
     def clean_audio(self, file_path):
         # Load audio at 16k sample rate
+       
         audio_np, sr = librosa.load(file_path, sr=16000)
         
         # Normalize
@@ -47,6 +54,26 @@ class VoiceSecurity:
         """
         Returns (is_verified: bool, score: float, message: str)
         """
+        wav_path = "converted_input.wav"
+
+        try:
+            subprocess.run([
+                "ffmpeg", "-y",
+                "-i", input_audio_path,
+                "-vn",
+                "-acodec", "pcm_s16le",
+                "-ar", "16000",
+                "-ac", "1",
+                wav_path
+            ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        # Ensure file actually exists
+            if not os.path.exists(wav_path):
+                return False, 0.0, "FFmpeg failed: WAV file not generated."
+
+        except Exception as e:
+            return False, 0.0, f"FFmpeg error: {str(e)}"
+
         # Mapping "user" string to DB ID 1 for demo consistency with main.py
         db_id = 1
         
@@ -70,7 +97,7 @@ class VoiceSecurity:
 
         try:
             # 2. Preprocess the incoming audio
-            cleaned_audio = self.clean_audio(input_audio_path)
+            cleaned_audio = self.clean_audio(wav_path)
             wav = preprocess_wav(cleaned_audio)
             embedding_new = self.encoder.embed_utterance(wav)
             embedding_new = embedding_new / norm(embedding_new)
@@ -79,8 +106,7 @@ class VoiceSecurity:
             score = np.dot(mean_embed, embedding_new)
             
             is_verified = score >= threshold
-            return is_verified, float(score), "Access Granted" if is_verified else "Voice Mismatch"
-
+            return bool(is_verified), float(score), "Access Granted" if is_verified else "Voice Mismatch"
         except Exception as e:
             return False, 0.0, f"Error during verification: {str(e)}"
 
