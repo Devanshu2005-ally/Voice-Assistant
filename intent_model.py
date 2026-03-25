@@ -29,22 +29,27 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 
 
-model = LogisticRegression()
-model.fit(X_train, y_train)
-y_pred = model.predict(X_test)
+lg_model = LogisticRegression()
+lg_model.fit(X_train, y_train)
+y_pred = lg_model.predict(X_test)
 # print(classification_report(y_test, y_pred))
+# 
 
 
 text = 'transfer 500 rupees to Rahul'
 vec = vectorizer.transform([text])
     
-probs = model.predict_proba(vec)
-max_prob = probs.max()
+pred = lg_model.predict(vec)
+print(encoder.inverse_transform(pred)[0])
    
 
-if max_prob < 0.2:
-    print('please give correct input')
 
-else:
-    pred = probs[0].argmax()
-    print(encoder.inverse_transform([pred])[0])
+
+
+#saving the vectorizer model
+with open('vectorizer.pkl', 'wb') as f:
+    pickle.dump(vectorizer, f)
+
+#saving the lg model
+with open('intent_model.pkl', 'wb') as f:
+    pickle.dump(lg_model, f)
