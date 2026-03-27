@@ -32,8 +32,8 @@ X_train, X_test, y_train, y_test = train_test_split(
 lg_model = LogisticRegression()
 lg_model.fit(X_train, y_train)
 y_pred = lg_model.predict(X_test)
-# print(classification_report(y_test, y_pred))
-# 
+print(classification_report(y_test, y_pred))
+
 
 
 text = 'transfer 500 rupees to Rahul'
@@ -50,6 +50,10 @@ print(encoder.inverse_transform(pred)[0])
 with open('vectorizer.pkl', 'wb') as f:
     pickle.dump(vectorizer, f)
 
-#saving the lg model
+# #saving the lg model
 with open('intent_model.pkl', 'wb') as f:
     pickle.dump(lg_model, f)
+
+#saving the encoder model
+with open('encoder.pkl', 'wb') as f:
+    pickle.dump(encoder, f)
