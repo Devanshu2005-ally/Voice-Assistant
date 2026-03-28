@@ -18,10 +18,10 @@ class MLEngine:
         self.translator = Translator()
         
         # Load Intent Model
-        if os.path.exists("intent_model.pkl") and os.path.exists("tfidf_vectorizer.pkl"):
+        if os.path.exists("intent_model.pkl") and os.path.exists("vectorizer.pkl") and os.path.exists('encoder.pkl'):
             self.intent_model = joblib.load("intent_model.pkl")
-            self.tfidf = joblib.load("tfidf_vectorizer.pkl")
-        
+            self.tfidf = joblib.load("vectorizer.pkl")
+            self.encoder = joblib.load('encoder.pkl')
         # Load Slot Filling Model
         if os.path.exists("slot_filling_crf_model.pkl"):
             with open("slot_filling_crf_model.pkl", "rb") as f:
@@ -32,7 +32,8 @@ class MLEngine:
     def predict_intent(self, text):
         if not self.intent_model: return "general_query"
         vect = self.tfidf.transform([text])
-        return self.intent_model.predict(vect)[0]
+        pred = self.intent_model.predict(vect)
+        return self.encoder.inverse_transform(pred)[0]
         
     def predict_slots(self, text):
         if not self.crf: return {}
@@ -85,3 +86,6 @@ class MLEngine:
 
 ml_engine = MLEngine()
 
+text = 'What is my credit limit?'
+
+print(ml_engine.predict_intent(text))
