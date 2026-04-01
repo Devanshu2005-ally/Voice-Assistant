@@ -65,7 +65,7 @@ FFmpeg (Required for Whisper audio processing)
 
 1. Clone the Repository
 Bash
-git clone https://github.com/yourusername/AI-Voice-Banking-Assistant.git
+git clone [https://github.com/yourusername/AI-Voice-Banking-Assistant.git](https://github.com/yourusername/AI-Voice-Banking-Assistant.git)
 cd AI-Voice-Banking-Assistant
 2. Set Up the Backend Environment
 Create and activate a virtual environment:
@@ -76,28 +76,27 @@ python -m venv venv
 venv\Scripts\activate
 # On macOS/Linux
 source venv/bin/activate
-Install the required dependencies:
-
+3. Install Dependencies
 Bash
 pip install -r requirements.txt
-3. Run the Backend Server
+4. Run the Backend Server
 Start the FastAPI server using Uvicorn:
 
 Bash
 uvicorn backend.main:app --reload
 The API will be available at http://localhost:8000. You can view the interactive API documentation at http://localhost:8000/docs.
 
-4. Run the Frontend
+5. Run the Frontend
 Simply open frontend/index.html in your browser, or use a live server extension in your IDE (like VS Code) to serve the static files.
 
 🧠 How the AI Pipeline Works
-Audio Capture: The user clicks the microphone button on the frontend (HTML/JS) and speaks a command (e.g., "Transfer 500 dollars to John").
+Audio Capture: The user clicks the microphone button on the frontend (HTML/JS) and speaks a command.
 
 Speech-to-Text (STT): The audio blob is sent to main.py and processed by the Whisper model to generate highly accurate text.
 
-Intent Classification: The text string is passed to intent.py, which identifies the user's goal (TRANSFER_FUNDS).
+Intent Classification: The text string is passed to intent.py, which identifies the user's goal (e.g., TRANSFER_FUNDS).
 
-Slot Filling: slotfill.py parses the text to extract the required parameters: {amount: 500, currency: "dollars", payee: "John"}.
+Slot Filling: slotfill.py parses the text to extract the required parameters (e.g., {amount: 500, currency: "dollars", payee: "John"}).
 
 Execution: database.py verifies the account balance and executes the transaction securely.
 
