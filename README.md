@@ -1,48 +1,46 @@
-🗣️ AI Voice Assistant for Financial Operations
-📖 Project Overview
-In today’s digital banking world, customers expect seamless, personalized, and hands-free experiences. Yet, many users—especially those less familiar with complex applications—struggle with basic tasks like checking balances, transferring funds, or making loan inquiries.
+# 🗣️ AI Voice Assistant for Financial Operations
 
-The Challenge: Design an AI-powered Voice Banking Assistant that enables users to perform secure financial operations through natural conversation.
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688)
+![Whisper](https://img.shields.io/badge/AI-Whisper-critical)
+![Frontend](https://img.shields.io/badge/Frontend-HTML%2FCSS%2FJS-f39f37)
 
-The Solution:
-This project delivers a highly accessible, convenient, and fast voice assistant. It understands natural language, responds intelligently, and executes actions safely, all while ensuring strict compliance and privacy standards.
+## 📖 Project Overview
 
-✨ Key Features
-Hands-Free Banking: Perform core banking tasks (balance checks, fund transfers, loan inquiries) entirely via voice commands.
+In today’s digital banking world, customers expect seamless, personalized, and hands-free experiences. Yet, many users—especially those less familiar with complex applications—struggle with basic tasks like checking balances, transferring funds, or making loan inquiries. 
 
-High-Accuracy Speech Processing: Utilizes transfer learning with the Whisper model for robust Speech-to-Text (STT) and Text-to-Speech (TTS) capabilities.
+**The Challenge:** Design an AI-powered Voice Banking Assistant that enables users to perform secure financial operations through natural conversation. 
 
-Intelligent Natural Language Understanding (NLU):
+**The Solution:**
+This project delivers a highly accessible, convenient, and fast voice assistant. It understands natural language, responds intelligently, and executes actions safely, all while ensuring strict compliance and privacy standards. 
 
-Intent Recognition: Accurately determines what the user wants to do (e.g., "Send money" vs. "Check balance").
+## ✨ Key Features
 
-Slot Filling: Extracts critical entities from the conversation (e.g., Amount, Payee Name, Account Type).
+* **Hands-Free Banking:** Perform core banking tasks (balance checks, fund transfers, loan inquiries) entirely via voice commands.
+* **High-Accuracy Speech Processing:** Utilizes transfer learning with the **Whisper** model for robust Speech-to-Text (STT) and Text-to-Speech (TTS) capabilities.
+* **Intelligent Natural Language Understanding (NLU):**
+    * **Intent Recognition:** Accurately determines what the user wants to do (e.g., "Send money" vs. "Check balance").
+    * **Slot Filling:** Extracts critical entities from the conversation (e.g., Amount, Payee Name, Account Type).
+* **Lightning Fast Backend:** Powered by **FastAPI** for asynchronous, high-performance API routing.
+* **Secure & Compliant:** Designed with financial safety and privacy in mind, securely handling data before executing database transactions.
 
-Lightning Fast Backend: Powered by FastAPI for asynchronous, high-performance API routing.
+## 🛠️ Technology Stack
 
-Secure & Compliant: Designed with financial safety and privacy in mind, securely handling data before executing database transactions.
+**Frontend:**
+* HTML5, CSS3, Vanilla JavaScript (Web Speech API integration & UI)
 
-🛠️ Technology Stack
-Frontend:
+**Backend:**
+* **Python** & **FastAPI** (`main.py`)
+* **Database Management:** SQLite/PostgreSQL handled via `database.py`
 
-HTML5, CSS3, Vanilla JavaScript (Web Speech API integration & UI)
+**Machine Learning & AI:**
+* **Voice Processing:** Whisper Model (Transfer Learning for STT/TTS)
+* **Intent Classification:** Custom ML model (`intent.py`)
+* **Entity Extraction:** Custom slot-filling model (`slotfill.py`)
 
-Backend:
+## 📂 Project Structure
 
-Python & FastAPI (main.py)
-
-Database Management: SQLite/PostgreSQL handled via database.py
-
-Machine Learning & AI:
-
-Voice Processing: Whisper Model (Transfer Learning for STT/TTS)
-
-Intent Classification: Custom ML model (intent.py)
-
-Entity Extraction: Custom slot-filling model (slotfill.py)
-
-📂 Project Structure
-Plaintext
+```text
 📦 AI-Voice-Banking-Assistant
  ┣ 📂 frontend
  ┃ ┣ 📜 index.html          # Chat/Voice interface
@@ -55,7 +53,7 @@ Plaintext
  ┃ ┗ 📜 database.py         # DB connection, CRUD operations, and transaction logic
  ┣ 📜 requirements.txt      # Python dependencies
  ┗ 📜 README.md             # Project documentation
-🚀 Installation & Setup
+ 🚀 Installation & Setup
 Prerequisites
 Python 3.8+
 
@@ -64,25 +62,19 @@ Node.js/Live Server (Optional, for serving the frontend)
 FFmpeg (Required for Whisper audio processing)
 
 1. Clone the Repository
-Bash
 git clone [https://github.com/yourusername/AI-Voice-Banking-Assistant.git](https://github.com/yourusername/AI-Voice-Banking-Assistant.git)
 cd AI-Voice-Banking-Assistant
 2. Set Up the Backend Environment
 Create and activate a virtual environment:
-
-Bash
 python -m venv venv
 # On Windows
 venv\Scripts\activate
 # On macOS/Linux
 source venv/bin/activate
 3. Install Dependencies
-Bash
 pip install -r requirements.txt
 4. Run the Backend Server
 Start the FastAPI server using Uvicorn:
-
-Bash
 uvicorn backend.main:app --reload
 The API will be available at http://localhost:8000. You can view the interactive API documentation at http://localhost:8000/docs.
 
